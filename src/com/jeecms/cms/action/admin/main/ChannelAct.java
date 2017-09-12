@@ -46,7 +46,7 @@ public class ChannelAct {
 	@RequiresPermissions("channel:channel_main")
 	@RequestMapping("/channel/channel_main.do")
 	public String channelMain(ModelMap model) {
-		return "channel/channel_main";
+		return "channel/channel_main";   
 	}
 	
 	@RequiresPermissions("channel:v_left")
