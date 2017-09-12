@@ -68,6 +68,7 @@
 		</property>
 	</bean>
 	<bean id="freemarkerViewResolver" class="com.jeecms.common.web.springmvc.RichFreeMarkerViewResolver">
+		<!-- sping mvc 自动装配前缀或缀，拼接返回的路劲 -->
 		<property name="prefix" value="/jeecms_sys/"/>
 		<property name="suffix" value=".html"/>
 		<property name="contentType" value="text/html; charset=UTF-8"/>

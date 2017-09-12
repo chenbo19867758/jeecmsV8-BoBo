@@ -91,6 +91,7 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 		}
 		try {
 			Subject subject = getSubject(request, response);
+			// 判断登录是否成功
 			subject.login(token);;
 			return onLoginSuccess(token,adminLogin,subject, request, response);
 		} catch (AuthenticationException e) {
