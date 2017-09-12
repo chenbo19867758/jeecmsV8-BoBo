@@ -36,6 +36,10 @@
     <filter-name>shiroFilter</filter-name>
     <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     <init-param>
+      <!-- 
+      	targetFilterLifecycle 允许代理注入Spring bean
+      	解决因为filter比bean先加载，也就是spring会先加载filter指定的类到container中，这样filter中注入的spring bean就为null了 
+      -->
       <param-name>targetFilterLifecycle</param-name>
       <param-value>true</param-value>
     </init-param>
