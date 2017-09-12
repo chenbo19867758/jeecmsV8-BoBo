@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsConfig.function"/> > <@s.m "cmsConfig.function.firewall"/> > <@s.m "cms.firewall.login"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_login.do" labelWidth="10" class="formDefStyle">
+<@p.password width="50" colspan="2" label="cms.firewall.password" id="password" name="password" maxlength="100" />
+<@p.tr/>
+<@p.td colspan="2"><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

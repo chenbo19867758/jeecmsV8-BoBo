@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "plugStoreConfig.function"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input class="return-button" type="submit" value="<@s.m "plugStore.center"/>" onclick="this.form.action='v_center.do';"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="config_update.do">
+<@p.text width="100" colspan="2" label="plugStoreConfig.serverUrl" name="serverUrl" value=plugStoreConfig.serverUrl size="30" maxlength="100" help="plugStoreConfig.serverUrl.help"/><@p.tr/>
+<@p.password width="50" colspan="1" label="plugStoreConfig.password" id="password" name="password" maxlength="100" />
+<@p.password width="50" colspan="1" label="plugStoreConfig.pwdAgain" equalTo="#password"  help="plugStoreConfig.password.help"/><@p.tr/>
+<@p.tr/>
+<@p.td width="100" colspan="2" ><@p.hidden name="id" value=plugStoreConfig.id/><@p.submit code="global.submit"/> &nbsp; <@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

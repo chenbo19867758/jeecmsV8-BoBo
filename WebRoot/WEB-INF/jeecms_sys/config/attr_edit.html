@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsConfig.function"/> > <@s.m "cmsConfig.function.attrs"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_attr_update.do" labelWidth="15" class="formDefStyle">
+<@p.text colspan="1" width="50" label="cmsConfig.daynew" name="dayNew" value=configAttr.dayNew! maxlength="20" required="true" class="required digits" help="cmsConfig.daynew.help"/>
+<@p.text colspan="1" width="50" label="cmsConfig.picturenew" name="pictureNew" value=configAttr.pictureNew! style="width:200px" required="true" class="required" maxlength="100"/><@p.tr/>
+<@p.radio width="50" colspan="1" label="cmsConfig.preview" name="preview" list={"true":"global.true","false":"global.false"} value=configAttr.preview required="true" class="required" />
+<@p.radio width="50" colspan="1" label="cmsConfig.flowSwitch" name="flowSwitch" list={"true":"global.true","false":"global.false"} value=configAttr.flowSwitch required="true" class="required" />
+<@p.tr/>
+<@p.text colspan="1" width="50" label="cmsConfig.codeImgWidth" name="codeImgWidth" value=configAttr.codeImgWidth! style="width:300px" required="true" class="required digits" maxlength="10"/>
+<@p.text colspan="1" width="50" label="cmsConfig.codeImgHeight" name="codeImgHeight" value=configAttr.codeImgHeight! style="width:300px" required="true" class="required digits" maxlength="10"/><@p.tr/>
+<@p.text colspan="1" width="50" label="cmsConfig.contentFreshMinute" name="contentFreshMinute" value=configAttr.contentFreshMinute! style="width:200px" required="true" class="required digits" maxlength="100" help="cmsConfig.contentFreshMinute.help"/>
+<@p.td colspan="1" width="50">
+	<a href="o_clear_fresh_time_cache.do" class="del-button" style="font-weight:normal; font-size:12px; font-family:'宋体';"><@s.m "cmsConfig.clearContentFreshMinuteCache"/></a>
+</@p.td>
+<@p.tr/>
+<@p.td colspan="2"><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

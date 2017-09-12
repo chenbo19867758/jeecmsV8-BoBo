@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+	//站点对话框
+	$("#siteDialog").dialog({
+		autoOpen: false,
+		modal: true,
+		width: 380,
+		height: 420,
+		position: ["center",20],
+		buttons: {
+			"OK": function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+	var sites_opened = false;
+	$('#site').click(function(){
+		//第一次打开，需要获取数据。
+		if(!sites_opened) {
+			//获取数据
+			$.get("v_site_edit.do",{id:"${cmsAdmin.id}"},function(s) {
+				$(s).appendTo("#siteTree");
+				$("#siteTree").treeview({collapsed:true});
+				$(":checkbox[id^='siteId_']").click( function () { 
+					var siteId=$(this).prop("id").split("siteId_")[1];
+					siteSelect(siteId,$("#step"+siteId).val());
+				});
+				$(":checkbox[id^='allChannel_']").click( function () { 
+					allChannelSelect($(this).prop("id").split("allChannel_")[1]);
+				});
+				$("input[id^='step']").change( function() {
+					changeStep($(this).prop("id").split("step")[1]);
+				});
+			},"html");
+			sites_opened = true;
+		}
+		$('#siteDialog').dialog('open');
+		return false;
+	});	
+});
+function siteSelect(siteId,step){
+	var checked=$("#siteId_"+siteId).prop("checked");
+	$("#allChannel_"+siteId).prop("checked",checked);
+	var siteIdArray=siteId.split("_");
+	var sid=siteIdArray[siteIdArray.length-1];
+	if(checked){
+			$("#step"+siteId).prop("disabled","");
+			$("#allChannelHide_"+siteId).prop("disabled","");
+			$("#allChannel_"+siteId).prop("disabled","");
+			$("#siteSelectDiv").append("<div id='oneSiteDiv_"+siteId+"'><input  name='siteIds' type='hidden' value='"+sid+"'/><input  name='steps'  id='stepH_"+siteId+"' type='hidden' value='"+step+"' /><input  name='allChannels' type='hidden' value='true' id='allChannelH_"+siteId+"'/>");
+		}else{
+			$("#step"+siteId).prop("disabled","disabled");
+			$("#allChannelHide_"+siteId).prop("disabled","disabled");
+			$("#allChannel_"+siteId).prop("disabled","disabled");
+			$("#oneSiteDiv_"+siteId).remove();
+			$("#oneSiteDiv_"+sid).remove();
+		}
+	//触发子节点
+	$(":checkbox[id^='siteId_"+siteId+"_']").each(function(){
+		$(this).prop("checked",checked);
+		siteSelect($(this).prop("id").split("siteId_")[1],step);
+	});
+}
+function allChannelSelect(siteId){
+	var checked=$("#allChannel_"+siteId).prop("checked");
+	$("#allChannelHide_"+siteId).val(checked);
+	$("#siteSelectDiv input[id='allChannelH_"+siteId+"']").val(checked);
+}
+function changeStep(siteId){
+	$("#siteSelectDiv input[id='stepH_"+siteId+"']").val($("#step"+siteId).val());
+}
+</script>
+<style>
+.pn-fcontent label{display:inline-block; margin-right:6px;}
+</style>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsAdminGlobal.function"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input type="button" value="<@s.m "global.backToList"/>" onclick="history.back();" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_update.do" labelWidth="12" class="formDefStyle">
+<@p.td width="50" colspan="1" label="cmsUser.username">${cmsAdmin.username}</@p.td>
+<@p.text width="50" colspan="1" label="cmsUser.email" name="email" value=cmsAdmin.email rvalue=cmsAdmin.email size="30" maxlength="100" class="email"/><@p.tr/>
+<@p.password width="50" colspan="1" label="cmsUser.password" id="password" name="password" maxlength="100" help="cmsUser.password.help"/>
+<@p.password width="50" colspan="1" label="cmsUser.pwdAgain" equalTo="#password" help="cmsUser.password.help"/><@p.tr/>
+<@p.select width="50" colspan="1" label="cmsUser.group" name="groupId" value=cmsAdmin.group.id list=groupList listKey="id" listValue="name" required="true"/>
+<@p.text width="50" colspan="1" label="cmsUser.rank" name="rank" value=cmsAdmin.rank style="width:70px" required="true" class="required digits" maxlength="5" max=currRank help="cmsUser.rank.help"/><@p.tr/>
+<@p.radio width="50" colspan="1" label="cmsUser.disabled" name="disabled" value=cmsAdmin.disabled list={"true":"global.true","false":"global.false"} required="true"/>
+<@p.td width="50" colspan="1" label="cmsUser.loginCount">${cmsAdmin.loginCount}</@p.td><@p.tr/>
+<@p.td width="50" colspan="1" label="cmsUser.register">${cmsAdmin.registerTime?string('yyyy-MM-dd HH:mm:ss')} &nbsp; ${cmsAdmin.registerIp}</@p.td>
+<@p.td width="50" colspan="1" label="cmsUser.lastLogin">${cmsAdmin.lastLoginTime?string('yyyy-MM-dd HH:mm:ss')} &nbsp; ${cmsAdmin.lastLoginIp}</@p.td><@p.tr/>
+<@p.text width="50" colspan="1" label="cmsUser.realname" name="realname" value=cmsAdmin.realname maxlength="100"/>
+<@p.radio width="50" colspan="1" label="cmsUser.gender" name="gender" value=cmsAdmin.gender list={"true":"cmsUser.male","false":"cmsUser.female","":"cmsUser.secrecy"}/><@p.tr/>
+<@p.radio width="50" colspan="2" label="cmsUser.selfAdmin" name="selfAdmin" value=cmsAdmin.selfAdmin list={"true":"global.true","false":"global.false"} required="true" help="cmsUser.selfAdmin.help"/>
+<@p.tr/>
+<@p.checkboxlist colspan="2" label="cmsUser.role" name="roleIds" valueList=roleIds list=roleList listKey="id" listValue="name"  help="cms.admin.role.help" class="m-checkbox"/><@p.tr/>
+<@p.td colspan="2" label="cmsUser.site" >
+<input type="button" class="del-button" id="site" value="<@s.m 'cmsUser.sitepermission'/>"></input>
+<div id="siteSelectDiv">
+<#list sites as s>
+<#assign id="${s.id}"/>
+<#assign us=cmsAdmin.getUserSite(s.id)!/>
+<div id="oneSiteDiv_${id}">
+	<input  name='siteIds' type='hidden' value='${s.id}'/>
+	<input  name='steps'  id='stepH_${s.id}' type='hidden' value='${us.checkStep!}'/>
+	<input  name='allChannels' type='hidden' <#if us.allChannel??><#if us.allChannel>value="true"<#else>value="false"</#if><#else>value="false"</#if> id="allChannelH_${id!}"/>
+</div>
+</#list>
+</div>
+</@p.td><@p.tr/>
+<@p.td colspan="2">
+	<@p.hidden name="id" value=cmsAdmin.id/>
+	<#list .data_model?keys as pkey>
+		<#if pkey?starts_with('query')><input type="hidden" name="${pkey}" value="${(.data_model[pkey])!?string}"/></#if><#t/>
+	</#list>
+	<@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/>
+</@p.td>
+</@p.form>
+</div>
+<div id="siteDialog" title="<@s.m "cmsUser.sitepermission"/>(${site.name})" style="display:none;">
+    <ul id="siteTree" class="filetree">
+    	<li><@s.m "cmsUser.site"/>&nbsp;&nbsp;<@s.m "cmsUser.checkStep"/>&nbsp;&nbsp;<@s.m "cmsUser.allChannel"/></li>
+    </ul>
+</div>
+</body>
+</html>

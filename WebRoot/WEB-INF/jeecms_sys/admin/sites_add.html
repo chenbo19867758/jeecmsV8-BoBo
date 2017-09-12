@@ -1,0 +1,13 @@
+<@childSite sites=siteList/>
+<#macro childSite sites>
+<#list sites as s>
+<li>
+${s.shortName}
+<#assign id="${s.id}"/>
+<input type="checkbox" name="siteIds" id="siteId_${id}"  value="${s.id}" />
+<input id="step${id}" type="text"  value="${s.finalStep!}" size="2" maxlength="2"/>
+<input name="allChannels" id="allChannelHide_${id}"  type="hidden" />
+<input type="checkbox" id="allChannel_${id}"/>
+</li>
+</#list>
+</#macro>

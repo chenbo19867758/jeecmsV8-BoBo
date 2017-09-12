@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<link href="${base}/res/common/css/jquery.flot.css" rel="stylesheet" type="text/css"/>
+<script language="javascript" type="text/javascript" src="${base}/res/common/js/excanvas.min.js"></script>
+<script src="${base}/res/common/js/jquery.flot.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.categories.min.js" type="text/javascript"></script>
+<script class="code" type="text/javascript">
+$(function() {
+	//柱状图
+	<#if result??&&result?size  gt 0>
+	 var data = [<#list result as s>{data: [["${s[1]}", "${s[0]}"]]}<#if s_has_next>,</#if></#list>];
+	 $.plot($("#placeholder"), data, {
+			series: {
+				lines: {
+					fill: true,
+				},
+				bars: {
+					show: true,
+					align:'center',
+					barWidth: 0.1,
+				}	
+			},
+	        xaxis: {
+	        	mode: "categories",
+	        	tickLength: 0
+	        },
+			yaxis: {
+				min: 0,
+				tickDecimals: 0
+			}
+		});
+	 <#else>
+	 	$("#placeholder").html("<@s.m 'statistic.noresult'/>");
+	 </#if>
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsAccess.visitor"/></div>
+</div>
+<div class="statistic">
+  <div class="sta-tab" style="margin-top:0px;">
+    <div class="sta-tab-nav">
+    <a <#if flag==4>class="day on"<#else>class="day"</#if>target="rightFrame" href="v_list.do?flag=4"><span></span><@s.m "statistic.function.days"/></a>
+    <a <#if flag==1>class="month on"<#else>class="month"</#if> target="rightFrame" href="v_list.do?flag=1"><span></span><@s.m "statistic.function.month"/></a>
+    <a <#if flag==2>class="year on"<#else>class="year"</#if> target="rightFrame" href="v_list.do?flag=2"><span></span><@s.m "statistic.function.years"/></a>
+    <a <#if flag==3>class="int on"<#else>class="int"</#if> target="rightFrame" href="v_list.do?flag=3"><span></span><@s.m "statistic.report.section"/></a>
+    </div>
+    <div class="tab-con">
+      <#if flag==3>
+      <div class="tab-con-top">
+        <form action="v_list.do" target="rightFrame" >
+      	<input name="begin" value="${begin!?string('yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:100px; margin-right:8px;"/>
+        <input name="end" value="${end!?string('yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:100px; margin-right:8px;"/>
+        <input name="flag" value="3" type="hidden"/>
+        <input type="submit" class="query" value="<@s.m 'global.query'/>" style="background-color:#3dc6ed;">
+        </form>
+      </div>
+      </#if>
+      <div class="tab-main" style="padding-left:320px; position:relative;">
+         <div id="placeholder"style="width: 99%; height: 380px; position:absolute; left:10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

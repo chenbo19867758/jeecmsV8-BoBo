@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>jeecms-left</title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("li").each(function(i){
+		$(this).removeClass("leftCurr");
+		if(i==0){
+			$(this).addClass("leftCurr");
+		}else{
+			$(this).addClass("leftNol");
+		}
+		$(this).click( function () {
+			$("li").each(function(){
+				$(this).removeClass("leftCurr");
+				$(this).addClass("leftNol");
+			});
+			$(".h3").each(function(){
+				$(this).next().hide();
+				$(this).removeClass("leftCurr");
+				$(this).addClass("leftNol");
+			});
+			$(this).removeClass("leftNol");
+			$(this).addClass("leftCurr");
+		});
+	});
+	$(".h3").each(function(){
+		$(this).next().hide();
+		$(this).addClass("leftNol");
+		$(this).click( function () {
+			$(".h3").each(function(){
+				$(this).next().hide();
+				$(this).removeClass("leftCurr");
+				$(this).addClass("leftNol");
+			});
+			$("li").each(function(){
+				$(this).removeClass("leftCurr");
+				$(this).addClass("leftNol");
+			});
+			$(this).removeClass("leftNol");
+			$(this).addClass("leftCurr");
+		    $(this).next().show(); 
+		});
+	});
+	$(".h3-child div").each(function(i){
+		$(this).click( function () {
+			$(".h3-child div").each(function(){
+				$(this).removeClass();
+				$(this).addClass("leftmenuBG");
+			});
+			$(this).removeClass();
+			$(this).addClass("leftmenuBGCurr");
+		});
+	});
+});
+</script>
+</head>
+<body>
+<div class="w230 f_l ove">
+   <div class="fresh" style="font-size:12px; text-indent:36px;">
+       <#include "/jeecms_sys/date.html"/>
+	</div>
+    <div class="w229">
+    	<ol>
+        <@cms_perm url="/site_config/v_base_edit.do">
+		<li class="leftCurr"><a href="../site_config/v_base_edit.do" target="rightFrame"><@s.m "cmsSiteConfig.function"/></a></li>
+		</@cms_perm>
+        <@cms_perm url="/site/site_main.do">
+		<li><a href="../site/site_main.do" target="rightFrame"><@s.m "cmsSite.function"/></a></li>
+		</@cms_perm>
+        </ol>
+        <@cms_perm url="/config/v_system_edit.do">
+		<h3 class="h3"><@s.m "cmsConfig.function"/></a></h3>
+		</@cms_perm>
+        <div class="h3-child" style="margin:0; padding:0;" >
+                <@cms_perm url="/config/v_system_edit.do">
+                <div class="leftmenuBG"><a href="../config/v_system_edit.do" target="rightFrame"><@s.m "cmsConfig.function.system"/></a></div>
+                </@cms_perm>
+                <@cms_perm url="/config/v_login_edit.do">
+                <div class="leftmenuBG"><a href="../config/v_login_edit.do" target="rightFrame"><@s.m "cmsConfig.function.login"/></a></div>
+                </@cms_perm>
+                <@cms_perm url="/config/v_member_edit.do">
+                <div class="leftmenuBG"><a href="../config/v_member_edit.do" target="rightFrame"><@s.m "cmsConfig.function.member"/></a></div>
+                </@cms_perm>
+                <@cms_perm url="/config/register_item_list.do">
+                <div class="leftmenuBG"><a href="../config/register_item_list.do" target="rightFrame"><@s.m "cmsConfig.function.member.register"/></a></div>
+                </@cms_perm>
+                <@cms_perm url="/config/v_mark_edit.do">
+		        <div class="leftmenuBG"><a href="../config/v_mark_edit.do" target="rightFrame"><@s.m "cmsConfig.function.mark"/></a></div>
+		        </@cms_perm>
+                <@cms_perm url="/config/v_firewall.do">
+		        <div class="leftmenuBG"><a href="../config/v_firewall.do" target="rightFrame"><@s.m "cmsConfig.function.firewall"/></a></div>
+		        </@cms_perm>
+		        <@cms_perm url="/config/v_content_charge.do">
+		        <div class="leftmenuBG"><a href="../config/v_content_charge.do" target="rightFrame"><@s.m "cmsConfigContentCharge.function"/></a></div>
+		        </@cms_perm>
+				<@cms_perm url="/site_config/v_company_edit.do">
+				<div class="leftmenuBG"><a href="../site_config/v_company_edit.do" target="rightFrame"><@s.m "cmsSiteConfig.function.company"/></a></div>
+				</@cms_perm>   
+                <@cms_perm url="/config/v_attr_edit.do">
+		        <div class="leftmenuBG"><a href="../config/v_attr_edit.do" target="rightFrame"><@s.m "cmsConfig.function.attrs"/></a></div>
+		        </@cms_perm>
+            </div>
+        <@cms_perm url="/webservice/v_list.do">
+		<h3 class="h3"><@s.m "cmsWebservice.function"/></a></h3>
+		</@cms_perm>
+        <div class="h3-child" style="margin:0; padding:0;" >
+        <@cms_perm url="/config/v_api_edit.do">
+		<div class="leftmenuBG"><a href="../config/v_api_edit.do" target="rightFrame"><@s.m "cmsConfig.function.api"/></a></div>
+		</@cms_perm>
+		<@cms_perm url="/config/v_sso_edit.do">
+		<div class="leftmenuBG"><a href="../config/v_sso_edit.do" target="rightFrame"><@s.m "cmsConfig.function.sso"/></a></div>
+		</@cms_perm>   
+		<@cms_perm url="/webservice/v_list.do">
+		<div class="leftmenuBG"><a href="../webservice/v_list.do" target="rightFrame"><@s.m "cmsWebservice.function"/></a></div>
+		</@cms_perm>
+		<@cms_perm url="/webserviceAuth/v_list.do">
+		<div class="leftmenuBG"><a href="../webserviceAuth/v_list.do" target="rightFrame"><@s.m "cmsWebserviceAuth.function"/></a></div>
+		</@cms_perm>
+		<@cms_perm url="/webserviceCallRecord/v_list.do">
+		<div class="leftmenuBG"><a href="../webserviceCallRecord/v_list.do" target="rightFrame"><@s.m "cmsWebserviceCallRecord.function"/></a></div>
+		</@cms_perm>
+        </div>  
+        <ol>
+		<@cms_perm url="/model/v_list.do">
+		<li><a href="../model/v_list.do" target="rightFrame"><@s.m "cmsModel.function"/></a></li>
+		</@cms_perm>
+		<@cms_perm url="/type/v_list.do">
+		<li><a href="../type/v_list.do" target="rightFrame"><@s.m "contentType.function"/></a></li>
+		</@cms_perm>       
+		<@cms_perm url="/directive/v_list.do">
+		<li><a href="../directive/v_list.do" target="rightFrame"><@s.m "directive.function"/></a></li>
+		</@cms_perm>	
+		<@cms_perm url="/ftp/v_list.do">
+		<li><a href="../ftp/v_list.do" target="rightFrame"><@s.m "ftp.function"/></a></li>
+		</@cms_perm>     
+      </ol>
+    </div>
+</div>
+</body>
+</html>

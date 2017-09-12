@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function luceneSubmit() {
+	$.ajax({
+        type: "POST",
+        url: "o_create.do",
+        data: {
+        	"startDate" : $("#startDate").val(),
+    		"endDate" : $("#endDate").val(),
+    		"max" : $("#max").val(),
+    		"siteId" : $("#siteId").val(),
+    		"channelId" : $("#channelId").val(),
+    		"startId" : $("#startId").val()
+    	},
+        dataType: "json",
+        success: function(data){
+        	if(data.success) {
+    			if(data.lastId && $("#stop").val()=="") {
+    				$("#startId").val(data.lastId);
+    				luceneSubmit();
+    			} else {
+    				$("#startId").val("");
+    				$.alert("<@s.m 'global.prompt'/>","<@s.m 'global.success'/>");
+    				$("#submitButton").removeAttr("disabled");
+    				$("#cancelButton").attr("disabled","disabled");
+    				$("#stop").val("");
+    			}
+    		} else {
+    			$.alert("<@s.m 'global.prompt'/>",data.msg);
+    			$("#submitButton").removeAttr("disabled");
+    			$("#cancelButton").attr("disabled","disabled");
+    			$("#stop").val("");
+    		}
+        },
+        error:function(){
+        	$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.urlnoPermission'/>");
+ 	 	}
+    });
+}
+
+$(function() {
+	$("#jvForm").validate( {
+		submitHandler : function(form) {
+			$("#submitButton").attr("disabled","disabled");
+			$("#cancelButton").removeAttr("disabled");
+			$("#stop").val("");		
+			luceneSubmit();
+		}
+	});
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsLucene.function"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_create.do" class="formDefStyle">
+<@p.select label="cmsLucene.channelId" id="channelId" name="channelId" list=channelList listKey="id" listValue="name" listDeep="deep" headerKey="" headerValue="cmsLucene.allChannel"/>
+<@p.td label="cmsLucene.startDate" >
+<input  id="startDate" name="startDate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endDate\')}'})" class="Wdate"/>
+</@p.td><@p.tr/>
+<@p.td label="cmsLucene.endDate" >
+<input  id="endDate" name="endDate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\')}'})" class="Wdate"/>
+</@p.td><@p.tr/>
+<@p.text label="cmsLucene.max" id="max" name="max" value="1000" required="true" class="required digits" min="10"/>
+<@p.td>
+	<input type="hidden" id="siteId" name="siteId" value="${site.id}"/>
+	<input type="hidden" id="startId" name="startId"/>
+	<input type="hidden" id="stop" value=""/>
+	<input class="submit" type="submit" id="submitButton" value="<@s.m "cmsLucene.createIndex"/>"/>
+     <input class="cancel" type="button" id="cancelButton" value="<@s.m "global.cancel"/>" disabled="disabled" onclick="$('#stop').val('1')"/>
+</@p.td>
+</@p.form>
+</div>
+</body>
+</html>

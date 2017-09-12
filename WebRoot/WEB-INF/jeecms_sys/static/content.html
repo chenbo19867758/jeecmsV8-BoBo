@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function createContents() {
+	var button = $("#createButton");
+	var value = button.val();
+	button.val("<@s.m 'cmsStatic.wait'/>").attr("disabled","disabled");
+	$.ajax({
+        type: "POST",
+        url: "o_content.do",
+        data: {channelId:$("#channelId option:selected").val(),startDate:$("#startDate").val()},
+        dataType: "json",
+        success: function(data){
+        	button.val(value).removeAttr("disabled");
+    		if(data.success) {
+    			$.alert("<@s.m 'global.prompt'/>","<@s.m 'cmsStatic.success'/>"+data.count);
+    		} else {
+    			alert(data.no);
+    			if(data.no){
+    				$.alert("<@s.m 'global.prompt'/>","<@s.m 'cmsStatic.content.failure'/>");
+    			}else{
+    				$.alert("<@s.m 'global.prompt'/>",data.msg);
+    			}
+    		}
+        },
+        error:function(){
+        	$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.urlnoPermission'/>");
+ 	 	}
+    });
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsStatic.function"/> > <@s.m "cmsStatic.content"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_content.do" class="formDefStyle">
+<@p.select label="cmsStatic.channel" name="channelId" id="channelId" list=channelList listKey="id" listValue="name" listDeep="deep" headerKey="" headerValue="cmsStatic.allChannel"/>
+<@p.text label="cmsStatic.startDate" name="startDate" id="startDate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate"/>
+<@p.td>
+	<input class="submit" style="width:auto; padding:0 10px;" id="createButton" type="button" value="<@s.m "cmsStatic.contentStatic"/>" onclick="createContents()"/>
+</@p.td>
+</@p.form>
+</div>
+</body>
+</html>

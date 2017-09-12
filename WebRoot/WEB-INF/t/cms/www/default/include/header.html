@@ -1,0 +1,31 @@
+<link rel="stylesheet" type="text/css" href="/${res}/css/login.css" />
+<script>
+function qkeypress(){
+	var q=$("input[name=q]");
+	if(q.val().trim()!=""){
+		$("input[name=q]").autocomplete("enable");
+	}else{
+		$("input[name=q]").autocomplete("disable");
+	}
+}
+</script>
+<header class="header rel">
+  <div class="header-jf"><a class="jf-btn" name="gb2big5" id="gb2big5">繁</a></div>
+  <Script Language=Javascript Src="${resSys}/gb2big5.js"></Script>
+  <div class="header-rss"><a class="rss-btn" href="${base}/rss.jspx" target="_blank" title="RSS订阅">RSS</a></div>
+  <div class="header-tag"><a class="tag-btn" href="${base}/tag.jspx" target="_blank" title="Tags标签">Tags</a></div>
+  <div class="container clearfix">
+    <a class="logo" href="${base}/"></a>
+    [#include "../include/nav.html"]
+    <div class="header-r">     
+      <div class="search">
+        <form action="${base}/search.jspx" target="_blank" id="searchForm">
+        <input type="text" name="q" value="${oldq!}" maxlength="50" autocomplete="off" class="searchCon"><input type="submit" value="" class="searchMenu">
+        </form>
+      </div>      
+      [#if user??]<div class="login-user"><a>[#if user.userImg??]<img src="${user.userImg}">[#else]<img src="/${res}/images/userImg.png">[/#if]${user.username}</a><div class="user-child"><a href="${base}/member/index.jspx">会员中心</a><a href="${base}/logout.jspx">退出账号</a></div></div>[#else]
+      <div class="login"><a class="tc" href="${base}/login.jspx">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="${base}/register.jspx">注册</a></div>
+      [/#if]
+    </div> 
+  </div>
+</header>

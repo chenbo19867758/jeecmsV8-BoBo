@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+	$(getTableForm()).validate();
+});
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+function optDelete() {
+	if(Pn.checkedCount('ids')<=0) {
+		$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.checkRecord'/>");
+		return;
+	}
+	$.confirm(doDelete,"<@s.m 'global.confirm'/>","<@s.m 'global.confirm.delete'/>");
+}
+function doDelete(){
+	var f = getTableForm();
+	f.action="o_delete.do";
+	f.submit();
+}
+function optSaveContent() {
+	var f = getTableForm();
+	f.action="o_update.do";
+}
+</script>
+<style type="">
+#name{float:left;}
+#priority{float:left;}
+label.error{color:red;display:block;float:left;margin-left:20px;padding:3px 0px;}
+</style>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsFriendlinkCtg.function"/> > <@s.m "global.list"/></div>
+</div>
+<div class="box-positon">
+	<form class="ropt">
+		<@cms_perm url="/friendlink/v_list.do">
+				<a href="../friendlink/v_list.do" target="rightFrame" style="color:#3694d7; font-weight:bold;"><&nbsp;<@s.m "cmsFriendlink.function"/></a>
+		</@cms_perm>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<form id="jvForm" action="o_save.do" method="post" class="formDefStyle" style="margin-bottom:10px; padding-left:5px;">
+<span style="float: left;font-weight:bold; color:#646464; margin-right:8px; line-height:24px;"><@s.m "cmsFriendlinkCtg.name"/>:</span> <input type="text" id="name" name="name" class="required" maxlength="50" style="width:150px"/>
+<span style="float: left;font-weight:bold; color:#646464; margin:0 8px 0 10px; line-height:24px;"><@s.m "cmsFriendlinkCtg.priority"/>:</span><input type="text" id="priority" name="priority" value="10" class="required digits" maxlength="5" style="width:50px"/>
+<input class="add" type="submit" value="<@s.m "global.add"/>" style="border:1px solid #3694d7; margin-left:10px; height:24px; line-height:24px;"/>
+</form>
+<div style="clear: both;"></div>
+<form id="tableForm" method="post">
+<@p.table value=list;cmsFriendlinkCtg,i,has_next><#rt/>
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<input type='checkbox' name='ids' value='${cmsFriendlinkCtg.id}' onclick="Pn.selectCheckBox('${cmsFriendlinkCtg.id}',this.checked)"/><#t/>
+	</@p.column><#t/>
+	<@p.column title="ID">${cmsFriendlinkCtg.id}<input type="hidden" name="wids" value="${cmsFriendlinkCtg.id}"/></@p.column><#t/>
+	<@p.column code="cmsFriendlinkCtg.name" align="center"><input type="text" name="name" value="${cmsFriendlinkCtg.name}" class="required" maxlength="50" style="width:200px"/></@p.column><#t/>
+	<@p.column code="cmsFriendlinkCtg.priority" align="center"><input type="text" name="priority" value="${cmsFriendlinkCtg.priority}" class="required" maxlength="5" style="width:50px"/></@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<a href="o_delete.do?ids=${cmsFriendlinkCtg.id}" onclick="if(!$.confirmToUrl(this.href)) {return false;}" class="pn-opt"><@s.m "global.delete"/></a><#t/>
+	</@p.column><#t/>
+</@p.table>
+<div style="margin-top:15px;">
+	<input class="del-button" type="button" value="<@s.m "global.delete"/>" onclick="optDelete();"/>
+&nbsp; <input class="del-button" type="submit" value="<@s.m "cmsFriendlinkCtg.saveContent"/>" onclick="optSaveContent();"/>
+</div>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

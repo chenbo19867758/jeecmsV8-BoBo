@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#tableForm").validate({
+		rules: {
+			encoding:{
+				required: true
+			}
+		},
+		messages:{
+			encoding:$.validator.messages.required
+		}
+	});
+});
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+function optBackUp() {
+	if(Pn.checkedCount('tableNames')<=0) {
+		$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.checkRecord'/>");
+		return;
+	}
+	var f = getTableForm();
+	f.action="o_backup.do";
+	if($(".error").length <=0){
+		f.submit();
+	}else {
+		if($(".error").is(":visible")==false){
+			f.submit();
+		}
+	}
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cms.function.db"/> > <@s.m "db.tables"/></div>
+</div>
+<div class="body-box">
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<@p.table value=tables;table,i,has_next><#rt/>
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"tableNames\",this.checked)'/>" width="25" align="center">
+		<input type='checkbox' name='tableNames' value='${table}'  onclick="Pn.selectCheckBox('${table}',this.checked)"/><#t/>
+	</@p.column><#t/>
+	<@p.column code="db.tablename" align="center">
+		<a href="v_listfields.do?tablename=${table!}" class="pn-opt" target="rightFrame">${table}</a>
+	</@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<a href="v_listfields.do?tablename=${table!}" class="pn-opt" target="rightFrame"><@s.m "db.viewtable"/></a> <#t/>
+	</@p.column><#t/>
+</@p.table>
+<div class="top-t" style="padding:20px 0; color:#999;"><span style="float: left;font-weight:bold; color:#646464; margin-right:8px; line-height:24px;"><@s.m "db.backfile.encoding"/></span><input id="encoding" name="encoding" value="GBK" style="margin-right:10px;"/><@s.m "db.backfile.encoding.help"/></div>
+<div style="">
+<input class="submit" type="button" value="<@s.m "db.backup"/>" onclick="optBackUp();"/>
+</div>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

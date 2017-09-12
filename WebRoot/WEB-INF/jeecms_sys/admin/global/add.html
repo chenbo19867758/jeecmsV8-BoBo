@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+	//站点对话框
+	$("#siteDialog").dialog({
+		autoOpen: false,
+		modal: true,
+		width: 380,
+		height: 420,
+		position: ["center",20],
+		buttons: {
+			"OK": function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+	var sites_opened = false;
+	$('#site').click(function(){
+		//第一次打开，需要获取数据。
+		if(!sites_opened) {
+			//获取数据
+			$.get("v_site_add.do",function(s) {
+				$(s).appendTo("#siteTree");
+				$("#siteTree").treeview({collapsed:true});
+				$(":checkbox[id^='siteId_']").click( function () { 
+					var siteId=$(this).prop("id").split("siteId_")[1];
+					siteSelect(siteId,$("#step"+siteId).val());
+				});
+				$(":checkbox[id^='allChannel_']").click( function () { 
+					allChannelSelect($(this).prop("id").split("allChannel_")[1]);
+				});
+				$("input[id^='step']").change( function() {
+					changeStep($(this).prop("id").split("step")[1]);
+				});
+			},"html");
+			sites_opened = true;
+		}
+		$('#siteDialog').dialog('open');
+		return false;
+	});	
+});
+function siteSelect(siteId,step){
+	var checked=$("#siteId_"+siteId).prop("checked");
+	$("#allChannel_"+siteId).prop("checked",checked);
+	var siteIdArray=siteId.split("_");
+	var sid=siteIdArray[siteIdArray.length-1];
+	if(checked){
+			$("#step"+siteId).prop("disabled","");
+			$("#allChannelHide_"+siteId).prop("disabled","");
+			$("#allChannel_"+siteId).prop("disabled","");
+			$("#siteSelectDiv").append("<div id='oneSiteDiv_"+siteId+"'><input  name='siteIds' type='hidden' value='"+sid+"'/><input  name='steps' id='stepH_"+siteId+"' type='hidden' value='"+step+"' /><input  name='allChannels' type='hidden' value='true' id='allChannelH_"+siteId+"'/>");
+		}else{
+			$("#step"+siteId).prop("disabled","disabled");
+			$("#allChannelHide_"+siteId).prop("disabled","disabled");
+			$("#allChannel_"+siteId).prop("disabled","disabled");
+			$("#oneSiteDiv_"+siteId).remove();
+			$("#oneSiteDiv_"+sid).remove();
+		}
+	//触发子节点
+	$(":checkbox[id^='siteId_"+siteId+"_']").each(function(){
+		$(this).prop("checked",checked);
+		siteSelect($(this).prop("id").split("siteId_")[1],step);
+	});
+}
+function allChannelSelect(siteId){
+	$("#allChannelHide_"+siteId).val($("#allChannel_"+siteId).prop("checked"));
+	$("#siteSelectDiv input[id='allChannelH_"+siteId+"']").val($("#allChannel_"+siteId).prop("checked"));
+}
+function changeStep(siteId){
+	$("#siteSelectDiv input[id='stepH_"+siteId+"']").val($("#step"+siteId).val());
+}
+</script>
+<style>
+.pn-fcontent label{display:inline-block; margin-right:6px;}
+</style>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsAdminGlobal.function"/> > <@s.m "global.add"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='v_list.do';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<#assign usernameExist><@s.m "error.usernameExist"/></#assign>
+<@p.form id="jvForm" action="o_save.do" labelWidth="12" class="formDefStyle">
+<@p.text width="50" colspan="1" label="cmsUser.username" name="username" required="true" maxlength="100" vld="{required:true,username:true,remote:'v_check_username.do',messages:{remote:'${usernameExist}'}}"/>
+<@p.text width="50" colspan="1" label="cmsUser.email" name="email" size="30" maxlength="100"  class="email"/><@p.tr/>
+<@p.password width="50" colspan="1" label="cmsUser.password" id="password" name="password" maxlength="100" class="required" required="true"/>
+<@p.password width="50" colspan="1" label="cmsUser.pwdAgain" equalTo="#password" required="true"/><@p.tr/>
+<@p.select width="50" colspan="1" label="cmsUser.group" name="groupId" list=groupList listKey="id" listValue="name" required="true"/>
+<@p.text width="50" colspan="1" label="cmsUser.rank" name="rank" value=currRank-1 style="width:70px" required="true" class="required digits" maxlength="5" max=currRank help="cmsUser.rank.help"/><@p.tr/>
+<@p.text width="50" colspan="1" label="cmsUser.realname" name="realname" maxlength="100"/>
+<@p.radio width="50" colspan="1" label="cmsUser.gender" name="gender" list={"true":"cmsUser.male","false":"cmsUser.female","":"cmsUser.secrecy"}/><@p.tr/>
+<@p.radio width="50" colspan="2" label="cmsUser.selfAdmin" name="selfAdmin" value="false" list={"true":"global.true","false":"global.false"} required="true" help="cmsUser.selfAdmin.help"/>
+<@p.tr/>
+<@p.checkboxlist colspan="2" label="cmsUser.role" name="roleIds" list=roleList listKey="id" listValue="name"  help="cms.admin.role.help" class="m-checkbox"/><@p.tr/>
+<@p.td colspan="2" label="cmsUser.site">
+<input type="button" class="del-button" id="site" value="<@s.m 'cmsUser.sitepermission'/>"></input>
+<div id="siteSelectDiv"></div>
+<div style="clear:both"></div>
+</@p.td><@p.tr/>
+<@p.td colspan="2"><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+<div id="siteDialog" title="<@s.m "cmsUser.sitepermission"/>(${site.name})" style="display:none;">
+    <ul id="siteTree" class="filetree">
+    	<li><@s.m "cmsUser.site"/>&nbsp;&nbsp;<@s.m "cmsUser.checkStep"/>&nbsp;&nbsp;<@s.m "cmsUser.allChannel"/></li>
+    </ul>
+</div>
+</body>
+</html>

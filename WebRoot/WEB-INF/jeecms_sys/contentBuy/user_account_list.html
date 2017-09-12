@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "userAccount.author.static.function"/>  > <@s.m "global.list"/></div>
+</div>
+<div class="body-box">
+<form action="user_account_list.do" method="post">
+<div style="padding-top:5px; padding-bottom:5px; text-indent:10px; border-bottom:1px solid #fff; border-top:1px solid #fff;">
+<@s.m "cmsUser.username"/>:<input name="username" value="${username!}" type="text"/>
+<@s.m "userAccount.drawTime.last"/>:
+<input name="drawTimeBegin" value="${drawTimeBegin!}" style="width:140px"  type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+-<input name="drawTimeEnd" value="${drawTimeEnd!}" style="width:140px"  type="text" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" />
+<@s.m "global.priority"/>:<@p.select name="orderBy" value=orderBy list={"1":"contentAuthor.orderBy.1","2":"contentAuthor.orderBy.2","3":"contentAuthor.orderBy.3","4":"contentAuthor.orderBy.4","5":"contentAuthor.orderBy.5","6":"contentAuthor.orderBy.6","7":"contentAuthor.orderBy.7","8":"contentAuthor.orderBy.8","9":"contentAuthor.orderBy.9","10":"contentAuthor.orderBy.10","11":"contentAuthor.orderBy.11","12":"contentAuthor.orderBy.12"}/>
+<input class="query" type="submit" value="<@s.m "global.query"/>"/>
+</div>
+</form>
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<input type="hidden" name="username" value="${username!}"/>
+<input type="hidden" name="drawTimeBegin" value="${drawTimeBegin!}"/>
+<input type="hidden" name="drawTimeEnd" value="${drawTimeEnd!}"/>
+<@p.table value=pagination listAction="user_account_list.do";userAccount,i,has_next><#rt/>
+	<@p.column code="userAccount.user">${userAccount.user.realname!userAccount.user.username}</@p.column><#t/>
+	<@p.column code="userAccount.contentTotalAmount">${userAccount.contentTotalAmount!}</@p.column><#t/>
+	<@p.column code="userAccount.contentYearAmount">${userAccount.contentYearAmount!}</@p.column><#t/>
+	<@p.column code="userAccount.contentMonthAmount">${userAccount.contentMonthAmount!}</@p.column><#t/>
+	<@p.column code="userAccount.contentDayAmount">${userAccount.contentDayAmount!}</@p.column><#t/>
+	<@p.column code="userAccount.contentBuyCount">${userAccount.contentBuyCount!}</@p.column><#t/>
+	<@p.column code="userAccount.drawCount">${userAccount.drawCount!}</@p.column><#t/>
+	<@p.column code="userAccount.contentNoPayAmount">${userAccount.contentNoPayAmount!}</@p.column><#t/>
+</@p.table>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

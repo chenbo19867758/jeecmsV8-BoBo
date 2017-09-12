@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>jeecms-left</title>
+<#include "/jeecms_sys/head.html"/>
+<script src="${base}/res/jeecms/js/FengTab.js" type="text/javascript"></script>
+<link href="${base}/res/common/css/jquery.flot.css" rel="stylesheet" type="text/css"/>
+<!--[if lte IE 8]><![endif]-->
+<script language="javascript" type="text/javascript" src="${base}/res/common/js/excanvas.min.js"></script>
+<script src="${base}/res/common/js/jquery.flot.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.time.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.categories.min.js" type="text/javascript"></script>
+<script class="code" type="text/javascript">
+$(function() {
+	var dayPv = [],weekPv=[],monthPv=[],yearPv=[];
+	<!--小时或者月pv-->
+	<#list dayPvList as s>
+		dayPv.push([${s[4]}, ${s[0]!}]);
+	</#list>
+	<#list yearPvList as s>
+		yearPv.push([${s[4]}, ${s[0]!}]);
+	</#list>
+	<!--日期-->
+	<#list weekPvList as s>
+		 var date="${s[4]}".split(" ")[0];
+		 var timeArray=date.split("-");
+		 var day=timeArray[1]+"/"+timeArray[2];
+		 date=new Date(timeArray[0],timeArray[1]-1,timeArray[2]);
+		 weekPv.push([date, ${s[0]!}]);
+		<#if s_index == 0>
+			var firstDate=date;
+	    </#if>
+	    <#if !s_has_next>
+			var lastDate=date;
+    	</#if>
+	</#list>
+	<#list monthPvList as s>
+		 var date="${s[4]}".split(" ")[0];
+		 var timeArray=date.split("-");
+		 var day=timeArray[1]+"/"+timeArray[2];
+		 date=new Date(timeArray[0],timeArray[1]-1,timeArray[2]);
+		 monthPv.push([date, ${s[0]!}]);
+		<#if s_index == 0>
+			var firstDate=date;
+	   </#if>
+	   <#if !s_has_next>
+			var lastDate=date;
+		</#if>
+	</#list>
+	var datasets = {
+		"day": {
+			label: "<@s.m 'statistic.function.pv'/>",
+			data: dayPv
+		},
+		"week": {
+			label: "<@s.m 'statistic.function.pv'/>",
+			data: weekPv
+		},
+		"month": {
+			label: "<@s.m 'statistic.function.pv'/>",
+			data: monthPv
+		},
+		"year": {
+			label: "<@s.m 'statistic.function.pv'/>",
+			data: yearPv
+		}
+	};
+	var i = 0;
+	$.each(datasets, function(key, val) {
+		val.color = i;
+		++i;
+	});
+	function plotAccordingToChoices() {
+		var data = [];
+		data.push(datasets["day"]);
+		if (data.length > 0) {
+			$.plot("#placeholder1", data,{
+				series: {
+					lines: {
+						show: true
+					},
+					points: {
+						show: true
+					}
+				},
+				grid: {
+					hoverable: true
+				},
+				yaxis: {
+					min: 0,tickDecimals: 0
+				},
+				pageX:"<@s.m 'cms.statistic.date'/>",
+				xaxis: {
+					ticks: [0,1, 2, 3, 4, 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
+					min:0,
+					max:23,
+					tickDecimals: 0
+				 }	
+			});
+		}
+		data = [];
+		data.push(datasets["week"]);
+		if (data.length > 0) {
+			$.plot("#placeholder2", data,{
+				series: {
+					lines: {
+						show: true
+					},
+					points: {
+						show: true
+					}
+				},
+				grid: {
+					hoverable: true
+				},
+				yaxis: {
+					min: 0,tickDecimals: 0
+				},
+				pageX:"<@s.m 'cms.statistic.date'/>",
+				xaxis: {
+					minTickSize: [1, "day"],
+					mode: "time",timezone: "browser",
+					timeformat: "%m/%d"
+				  }
+			});
+		}
+		data = [];
+		data.push(datasets["month"]);
+		if (data.length > 0) {
+			$.plot("#placeholder3", data,{
+				series: {
+					lines: {
+						show: true
+					},
+					points: {
+						show: true
+					}
+				},
+				grid: {
+					hoverable: true
+				},
+				yaxis: {
+					min: 0,tickDecimals: 0
+				},
+				pageX:"<@s.m 'cms.statistic.date'/>",
+				xaxis: {
+					minTickSize: [1, "day"],
+					mode: "time",timezone: "browser",
+					timeformat: "%m/%d"
+				  }
+			});
+		}
+		data = [];
+		data.push(datasets["year"]);
+		if (data.length > 0) {
+			$.plot("#placeholder4", data,{
+				series: {
+					lines: {
+						show: true
+					},
+					points: {
+						show: true
+					}
+				},
+				grid: {
+					hoverable: true
+				},
+				yaxis: {
+					min: 0,tickDecimals: 0
+				},
+				pageX:"<@s.m 'cms.statistic.date'/>",
+				xaxis: {
+					ticks: [1, 2, 3, 4, 5,6,7,8,9,10,11,12],
+					min:1,
+					max:12,
+					tickDecimals: 0,
+				    tickFormatter:function (val, axis) {
+				    	  return val;
+				    }
+				}
+			});
+		}
+	}
+	plotAccordingToChoices();
+	$("<div id='tooltip'></div>").css({
+		position: "absolute",
+		display: "none",
+		border: "1px solid #fdd",
+		padding: "2px",
+		"background-color": "#fee",
+		opacity: 0.80
+	}).appendTo("body");
+	$("#placeholder1,#placeholder2,#placeholder3,#placeholder4").bind("plothover", function (event, pos, item) {
+		if (item) {
+			var x = item.datapoint[0].toFixed(0),
+				y = item.datapoint[1].toFixed(0);
+			$("#tooltip").html(item.series.label  + " = " + y)
+			.css({top: item.pageY+5, left: item.pageX+5})
+			.fadeIn(200);
+		} else {
+			$("#tooltip").hide();
+		}
+	});
+});
+$(function() {
+	$("#tabs").tabs({
+		event: "mouseover"
+	});
+	$("#contentTabs").tabs({
+		event: "mouseover"
+	});
+	$("a[id^='check_']").each(function(i){
+	   var contentId=$(this).prop("id").split("check_")[1];
+	   $(this).bind('click', function() {
+		   $.post("content/o_ajax_check.do", {
+				  ids:contentId
+				}, function(data) {
+					if(data.success){
+						 $("#tr_"+contentId).remove();
+						 $.alert("<@s.m 'global.prompt'/>","<@s.m 'global.success'/>");
+					}else{
+						 $.alert("<@s.m 'global.prompt'/>","<@s.m 'global.failed'/>");
+					}
+			 }, "json");
+		});	
+	});
+	$("#dialog-reject-form").dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			"<@s.m code='global.submit'/>": function rejectSubmit() {
+				$.post("content/o_ajax_reject.do", {
+					ids:$("#contentId").val(),
+					rejectOpinion:$("#rejectOpinion").val()
+				}, function(data) {
+					if(data.success){
+						 $("#tr_"+contentId).remove();
+						 $.alert("<@s.m 'global.prompt'/>","<@s.m 'global.success'/>");
+					}else{
+						 $.alert("<@s.m 'global.prompt'/>","<@s.m 'global.failed'/>");
+					}
+				 }, "json");
+				 $( this ).dialog( "close" );
+			},
+			"<@s.m code='global.reset'/>": function() {
+				$("#rejectForm")[0].reset();
+			}
+		}
+	});
+	$("a[id^='reject_']").each(function(i){
+	  contentId=$(this).prop("id").split("reject_")[1];
+	  $("#contentId").val(contentId);
+	  $(this).bind('click', function() {
+		  $( "#dialog-reject-form" ).dialog("open");
+	  });	
+	});
+});
+</script>
+</head>
+<body>
+     <div class="page-positon ove">
+    <div class="position-div"><@s.m "global.position"/>: <@s.m "global.admin.home"/> > <@s.m "global.admin.index"/></div>
+     </div>
+     <div class="welcome-con">
+       <span><@s.m "welcome.usedMemory"/>: <em class="yync">${(usedMemory/1024/1024)?string("0.##")}MB</em><@s.m "welcome.useableMemory"/>: <em class="sync">${(useableMemory/1024/1024)?string("0.##")}MB</em><@s.m "welcome.maxMemory"/>: ${(maxMemory/1024/1024)?string("0.##")}MB</span><@s.m "welcome.word.login"/>${site.name!}<a class="change-inf" href="personal/v_profile.do"><@s.m "welcome.personinfo.edit"/></a><@s.m "welcome.lastlogintime"/>: ${user.lastLoginTime?string("yyyy-MM-dd")}
+     </div>
+     <div class="home-main">
+       <div class="home-main-l f_l">
+         <div class="item count">
+           <div class="item-nav"><a><i></i><@s.m "statistic.count"/></a></div>
+           <div class="item-list">
+             <span class="first"><@s.m "statistic.by.day"/></span><span><@s.m "statistic.by.week"/></span><span><@s.m "statistic.by.month"/></span><span class="end"><@s.m "statistic.by.total"/></span>
+           </div>
+           <div class="item-con">
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+                 <tr>
+                   <td>
+                     <div class="home-view">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/view-icon.png"></div>
+                       <div class="home-view-txt"><span>${site.dayPvTotal!}</span><p><@s.m "statistic.site.pvCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-publish">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/publish-icon.png"></div>
+                       <div class="home-view-txt"><span>${releaseDayCount!}</span><p><@s.m "statistic.content.releaseCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-examine">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/examine-icon.png"></div>
+                       <div class="home-view-txt"><span>${checkingDayCount!}</span><p><@s.m "statistic.content.checkingCount"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td>
+                     <div class="home-comment">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/comment-icon.png"></div>
+                       <div class="home-view-txt"><span>${commentDayCount!}</span><p><@s.m "statistic.comment.comments"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-message">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/message-icon.png"></div>
+                       <div class="home-view-txt"><span>${guestbookDayCount!}</span><p><@s.m "statistic.guestbook.guestbooks"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-member">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/member-icon.png"></div>
+                       <div class="home-view-txt"><span>${memberDayCount!}</span><p><@s.m "statistic.member.registers"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+                 <tr>
+                   <td>
+                     <div class="home-view">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/view-icon.png"></div>
+                       <div class="home-view-txt"><span>${site.weekPvTotal!}</span><p><@s.m "statistic.site.pvCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-publish">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/publish-icon.png"></div>
+                       <div class="home-view-txt"><span>${releaseWeekCount!}</span><p><@s.m "statistic.content.releaseCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-examine">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/examine-icon.png"></div>
+                       <div class="home-view-txt"><span>${checkingWeekCount!}</span><p><@s.m "statistic.content.checkingCount"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td>
+                     <div class="home-comment">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/comment-icon.png"></div>
+                       <div class="home-view-txt"><span>${commentWeekCount!}</span><p><@s.m "statistic.comment.comments"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-message">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/message-icon.png"></div>
+                       <div class="home-view-txt"><span>${guestbookWeekCount!}</span><p><@s.m "statistic.guestbook.guestbooks"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-member">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/member-icon.png"></div>
+                       <div class="home-view-txt"><span>${memberWeekCount!}</span><p><@s.m "statistic.member.registers"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+                 <tr>
+                   <td>
+                     <div class="home-view">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/view-icon.png"></div>
+                       <div class="home-view-txt"><span>${site.monthPvTotal!}</span><p><@s.m "statistic.site.pvCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-publish">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/publish-icon.png"></div>
+                       <div class="home-view-txt"><span>${releaseMonthCount!}</span><p><@s.m "statistic.content.releaseCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-examine">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/examine-icon.png"></div>
+                       <div class="home-view-txt"><span>${checkingMonthCount!}</span><p><@s.m "statistic.content.checkingCount"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td>
+                     <div class="home-comment">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/comment-icon.png"></div>
+                       <div class="home-view-txt"><span>${commentMonthCount!}</span><p><@s.m "statistic.comment.comments"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-message">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/message-icon.png"></div>
+                       <div class="home-view-txt"><span>${guestbookMonthCount!}</span><p><@s.m "statistic.guestbook.guestbooks"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-member">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/member-icon.png"></div>
+                       <div class="home-view-txt"><span>${memberMonthCount!}</span><p><@s.m "statistic.member.registers"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+                 <tr>
+                   <td>
+                     <div class="home-view">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/view-icon.png"></div>
+                       <div class="home-view-txt"><span>${site.pvTotal!}</span><p><@s.m "statistic.site.pvCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-publish">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/publish-icon.png"></div>
+                       <div class="home-view-txt"><span>${releaseTotalCount!}</span><p><@s.m "statistic.content.releaseCount"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-examine">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/examine-icon.png"></div>
+                       <div class="home-view-txt"><span>${checkingTotalCount!}</span><p><@s.m "statistic.content.checkingCount"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td>
+                     <div class="home-comment">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/comment-icon.png"></div>
+                       <div class="home-view-txt"><span>${commentTotalCount!}</span><p><@s.m "statistic.comment.comments"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-message">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/message-icon.png"></div>
+                       <div class="home-view-txt"><span>${guestbookTotalCount!}</span><p><@s.m "statistic.guestbook.guestbooks"/></p></div>
+                     </div>
+                   </td>
+                   <td>
+                     <div class="home-member">
+                       <div class="home-view-img"><img src="${base}/res/jeecms/images/member-icon.png"></div>
+                       <div class="home-view-txt"><span>${memberTotalCount!}</span><p><@s.m "statistic.member.registers"/></p></div>
+                     </div>
+                   </td>
+                 </tr>
+               </tbody>
+             </table>
+             </div>
+           </div>
+         </div>
+         <script>
+			$(".count").FengTab({titCell:".item-list",mainCell:".item-con",defaultIndex:0,trigger:"click",titOnClassName:"on",showtime: 0});
+		</script>
+         <div class="item analysis">
+           <div class="item-nav"><a><i></i><@s.m "statistic.pv.static"/></a></div>
+           <div class="item-list">
+             <span class="first"><@s.m "statistic.by.day"/></span><span><@s.m "statistic.by.week"/></span><span><@s.m "statistic.by.month"/></span><span class="end"><@s.m "statistic.by.year"/></span>
+           </div>
+           <div class="item-con">
+             <div style="float:left; width:99%;height: 270px;">
+				<div id="placeholder1" style="float:left; width:95%;height: 250px;"></div>
+			 </div>
+			 <div style="float:left; width:99%;height: 270px;">
+				<div id="placeholder2" style="float:left;width:680%;height: 250px;"></div>
+			 </div>
+			 <div style="float:left; width:99%;height: 270px;">
+				<div id="placeholder3"  style="float:left;width:680%;height: 250px;"></div>
+			 </div>
+			 <div style="float:left; width:99%;height: 270px;">
+				<div id="placeholder4" style="float:left;width:680%;height: 250px;"></div>
+			 </div>
+           </div>
+         </div>
+         <script>
+			$(".analysis").FengTab({titCell:".item-list",mainCell:".item-con",defaultIndex:0,trigger:"click",titOnClassName:"on",showtime: 0});
+		</script>
+       </div>
+       <div class="home-main-r f_r">
+         <div class="item channel">
+           <div class="item-nav"><a><i></i><@s.m "statistic.channel.static"/></a></div>
+           <div class="item-list">
+             <span class="first"><@s.m "statistic.by.day"/></span><span><@s.m "statistic.by.week"/></span><span><@s.m "statistic.by.month"/></span><span class="end"><@s.m "statistic.by.total"/></span>
+           </div>
+           <div class="item-con">
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+               	<#list channelList?sort_by("viewsDayTotal")?reverse as c>
+                 <tr><td><span <#if c_index==0>class="first"<#elseif c_index==1>class="second"<#elseif c_index==2>class="third"</#if>>${c_index+1}</span>${c.name!}</td><td class="channel-count">${c.viewsDayTotal!}</td></tr>
+                 </#list>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+               	<#list channelList?sort_by("viewsWeekTotal")?reverse as c>
+                 <tr><td><span <#if c_index==0>class="first"<#elseif c_index==1>class="second"<#elseif c_index==2>class="third"</#if>>${c_index+1}</span>${c.name!}</td><td class="channel-count">${c.viewsWeekTotal!}</td></tr>
+                 </#list>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+               	<#list channelList?sort_by("viewsMonthTotal")?reverse as c>
+                 <tr><td><span <#if c_index==0>class="first"<#elseif c_index==1>class="second"<#elseif c_index==2>class="third"</#if>>${c_index+1}</span>${c.name!}</td><td class="channel-count">${c.viewsMonthTotal!}</td></tr>
+                 </#list>
+               </tbody>
+             </table>
+             </div>
+             <div>
+             <table cellpadding="0" cellspacing="0">
+               <tbody>
+                 <#list channelList?sort_by("viewTotal")?reverse  as c>
+                 <tr><td><span <#if c_index==0>class="first"<#elseif c_index==1>class="second"<#elseif c_index==2>class="third"</#if>>${c_index+1}</span>${c.name!}</td><td class="channel-count">${c.viewTotal!}</td></tr>
+                 </#list>
+               </tbody>
+             </table>
+             </div>
+           </div>
+         </div>
+         <script>
+		$(".channel").FengTab({titCell:".item-list",mainCell:".item-con",defaultIndex:0,trigger:"click",titOnClassName:"on",showtime: 0});
+		</script>
+       </div>
+     </div>
+</body>
+</html>

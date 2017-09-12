@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script class="code" type="text/javascript">
+function query(level){
+	$("#channelLevel").val(level);
+	$("#queryForm").submit();
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "statistic.function.channel"/> > <@s.m "global.list"/></div>
+</div>
+<div class="statistic">
+  <div class="sta-tab">
+    <div class="sta-tab-nav">
+    <a <#if view=="viewDay">class="day on"<#else>class="day"</#if>target="rightFrame" href="v_list.do?view=viewDay"><span></span><@s.m "statistic.function.days"/></a>
+    <a <#if view=="viewMonth">class="month on"<#else>class="month"</#if>target="rightFrame" href="v_list.do?view=viewMonth"><span></span><@s.m "statistic.function.month"/></a>
+    <a <#if view=="view">class="year on"<#else>class="year"</#if>target="rightFrame" href="v_list.do?view=view"><span></span><@s.m "statistic.by.total"/></a>
+    </div>
+    <div class="tab-con">
+      <div class="tab-con-top">
+      	<form action="v_list.do" target="rightFrame" id="queryForm" >
+	      	<input name="view" value="${view!}" type="hidden"/>
+	      	<input name="channelLevel" id="channelLevel" value="${channelLevel!}" type="hidden"/>
+	        <input type="button" onclick="query('1')" value="<@s.m 'directive.channel.channel.top'/>" <#if channelLevel??><#if channelLevel==1>class="all-input year-did"<#else>class="all-input"</#if><#else>class="all-input"</#if> />
+	        <input type="button" onclick="query('2')" value="<@s.m 'channel.bottom'/>" <#if channelLevel??><#if channelLevel==2>class="all-input year-did"<#else>class="all-input"</#if><#else>class="all-input"</#if>/>
+        </form>
+      </div>
+      <div class="tab-pic-main" style="display:block;">
+        <table cellpadding="0" cellspacing="0">
+          <tbody>
+            <tr class="hui"><td class="hui"><@s.m "channel.name"/></td>
+            <td><#if view="view"><@s.m "channel.view"/><#elseif view="viewDay"><@s.m "channel.viewsDay"/><#elseif view="viewMonth"><@s.m "channel.viewsMonth"/><#elseif view="viewWeek"><@s.m "channel.viewsWeek"/></#if></td>
+            </tr>
+            <#list list as channel>
+            <tr><td class="hui">${channel.name}</td>
+            <td>
+            	<#if view=="view">
+					${channel.viewTotal!}
+				<#elseif view="viewDay">
+					${channel.viewsDayTotal!}
+				<#elseif view="viewMonth">
+					${channel.viewsMonthTotal!}
+				<#elseif view="viewWeek">
+					${channel.viewsWeekTotal!}
+				</#if>
+            </td></tr>
+            </#list>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

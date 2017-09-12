@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsWebserviceAuth.function"/> > <@s.m "global.add"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input class="return-button" type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='v_list.do';"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_save.do" class="formDefStyle">
+<@p.text width="50" colspan="1" label="cmsWebserviceAuth.username" name="username" required="true" class="required" maxlength="20"/>
+<@p.text width="50" colspan="1" label="cmsWebserviceAuth.system" name="system" required="true" class="required" maxlength="20"/><@p.tr/>
+<@p.password width="50" colspan="1" label="cmsWebserviceAuth.password" id="password" name="password" maxlength="20" required="true" class="required"/>
+<@p.password width="50" colspan="1" label="cmsUser.pwdAgain" required="true" equalTo="#password"/><@p.tr/>
+<@p.radio width="100" colspan="2" label="cmsWebserviceAuth.enable" name="enable" value="true" list={"true":"global.true","false":"global.false"}/><@p.tr/>
+
+<@p.td width="100" colspan="2"><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

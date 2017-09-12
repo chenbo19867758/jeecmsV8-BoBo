@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>JEECMS Administrator's Control Panel</title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+if(top!=this) {
+	top.location=this.location;
+}
+$(function() {
+	$("#username").focus();
+	$("#jvForm").validate();
+});
+</script>
+<style type="text/css">
+body{background:url(${base}/res/jeecms/img/login/bg.jpg) left top repeat-x;}
+</style>
+</head>
+<body>
+<form id="jvForm" action="login.do" method="post" style="width:100%;">
+<#if returnUrl??><input type="hidden" name="returnUrl" value="${returnUrl}"/></#if>
+<#if processUrl??><input type="hidden" name="processUrl" value="${processUrl}"/></#if>
+<div class="login-index">
+  <div class="login-index-box">
+      <div class="login-logo"><img src="${base}/res/jeecms/images/login-logo.jpg"></div>
+      <div class="login-text">
+        <div class="username-con"><i></i><input type="text" id="username" name="username" vld="{required:true}" maxlength="100" class="username" placeholder="<@s.m "login.username"/>" /></div>
+        <div class="password-con"><i></i><input type="password" id="password" name="password" maxlength="32" vld="{required:true}" class="password" placeholder="<@s.m "login.password"/>" /></div>
+        <#if (errorTimes??&&errorTimes<=0)||(errorRemaining?? && errorRemaining<=0)>
+        <div class="login-captcha"><i></i>
+          <input name="captcha" type="text" id="captcha" vld="{required:true}" class="captcha" placeholder="<@s.m "login.captcha"/>" />
+          <img src="${base}/captcha.svl" onclick="this.src='${base}/captcha.svl?d='+new Date()*1"/>
+        </div>
+        </#if>
+      </div>
+      <div class="login-submit" style="border:none;"><input type="submit" name="submit" value="" style="border:0px none;" /></div>
+      <div style="height:0; clear:both;"></div> 		
+      <#if error??> 
+      <div class="login-error">
+		<ul>
+		  <#if error=="org.apache.shiro.authc.IncorrectCredentialsException">
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidPassword"/></li>
+		  <#elseif error=="org.apache.shiro.authc.UnknownAccountException">
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.usernameNotExist"/></li>
+		  <#elseif error=="com.jeecms.common.security.CaptchaErrorException">
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidCaptcha"/></li>
+		  <#elseif error=="com.jeecms.common.security.DisabledException">
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.userDisabled"/></li>
+ 		  </#if>
+	    </ul>				
+      </div>
+      </#if>
+    
+    </div>
+</div>
+</form>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

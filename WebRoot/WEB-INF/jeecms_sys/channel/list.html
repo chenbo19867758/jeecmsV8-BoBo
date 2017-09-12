@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+function optDelete() {
+	if(Pn.checkedCount('ids')<=0) {
+		$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.checkRecord'/>");
+		return;
+	}
+	$.confirm(doDelete,"<@s.m 'global.confirm'/>","<@s.m 'global.confirm.delete'/>");
+}
+function doDelete(){
+	var f = getTableForm();
+	f.action="o_delete.do";
+	f.submit();
+}
+function optPriority() {
+	var f = getTableForm();
+	f.action="o_priority.do";
+	f.submit();
+}
+</script>
+<script type="text/javascript">
+var timeout = 500;
+var closetimer = 0;
+var ddmenuitem = 0;
+function jsddm_open()
+{	
+	jsddm_canceltimer();
+	jsddm_close();
+	ddmenuitem = $(this).find('ul').eq(0).css('visibility', 'visible');
+}
+function jsddm_close()
+{	
+	if(ddmenuitem) ddmenuitem.css('visibility', 'hidden');
+}
+function jsddm_timer()
+{	
+	closetimer = window.setTimeout(jsddm_close, timeout);
+}
+function jsddm_canceltimer()
+{	
+	if(closetimer){	
+		window.clearTimeout(closetimer);
+		closetimer = null;
+	}
+}
+document.onclick = jsddm_close;
+$(function() {
+	$("#tableForm").validate();
+	$('#jsddm > li').bind('mouseover', jsddm_open);
+	$('#jsddm > li').bind('mouseout',  jsddm_timer);
+	});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "channel.function"/> > <@s.m "global.list"/></div>
+</div>
+<div class="box-positon">
+   <form class="ropt">
+        <input type="hidden" name="root" value="${root!}"/>
+		<@cms_perm url="/channel/v_add.do">
+		 <ul id="jsddm">
+	        <li class="first"><a href="#"><@s.m "channel.add"/></a>
+	        <ul>
+	            <#list modelList as model>
+			 	<li value="1">
+	            <a href="v_add.do?modelId=${model.id}&root=${root!}">
+	            	${model.name}</a>
+	            </li>
+				 </#list>
+	        </ul>
+	    </li>
+	    </ul>
+	  
+		</@cms_perm>
+	</form>
+
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<form id="tableForm" method="post">
+<input type="hidden" name="root" value="${root!}"/>
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<@p.table value=list;channel,i,has_next><#rt/>
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="25" align="center">
+		<input type='checkbox' name='ids' value='${channel.id}' onclick="Pn.selectCheckBox('${channel.id}',this.checked)"/><#t/>
+	</@p.column><#t/>
+	<@p.column title="ID" align="center">${channel.id}<input type="hidden" name="wids" value="${channel.id}"/></@p.column><#t/>
+	<@p.column code="channel.name" align="center">${channel.name}</@p.column><#t/>
+	<@p.column code="channel.path" align="center">${channel.path}</@p.column><#t/>
+	<@p.column code="channel.priority" align="center"><input type="text" name="priority" value="${channel.priority}" style="width:40px;"/></@p.column><#t/>
+	<@p.column code="channel.display" align="center"><#if channel.display><@s.m "global.true"/><#else><@s.m "global.false"/></#if></@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<@cms_perm url="/channel/v_edit.do">
+		<a href="v_edit.do?id=${channel.id}" class="pn-opt"><@s.m "global.edit"/></a> | <#rt/>
+		</@cms_perm>
+		<@cms_perm url="/channel/o_delete.do">
+		<a href="o_delete.do?ids=${channel.id}&root=${root!}" class="pn-opt" onclick="if(!$.confirmToUrl(this.href)) {return false;}"><@s.m "global.delete"/></a><#t/>
+		</@cms_perm>
+	</@p.column><#t/>
+</@p.table>
+<div style="margin-top:20px;">
+	<@cms_perm url="/channel/o_delete.do">
+	<input type="button" value="<@s.m "global.delete"/>" onclick="optDelete();" class="del-button"/ style="float:left; margin-right:10px;">
+	</@cms_perm>
+	<@cms_perm url="/channel/o_priority.do">
+&nbsp; <input type="button" value="<@s.m "global.saveOrder"/>" onclick="optPriority();" class="bcplxx-button"/ style="float:left;">
+	</@cms_perm>
+</div>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

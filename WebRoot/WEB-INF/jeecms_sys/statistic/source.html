@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<link href="${base}/res/common/css/jquery.flot.css" rel="stylesheet" type="text/css"/>
+<!--[if lte IE 8]><![endif]-->
+<script language="javascript" type="text/javascript" src="${base}/res/common/js/excanvas.min.js"></script>
+<script src="${base}/res/common/js/jquery.flot.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.time.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.pie.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.categories.min.js" type="text/javascript"></script><script class="code" type="text/javascript">
+var engine = [],direct=[],link=[];
+<#if flag==2||flag==4>
+	<#list keys as s>
+		var values${s_index}=[];
+		<#list resultMap["${s}"] as v>
+	    	values${s_index}.push([${v[1]},${v[0]}]);
+	    </#list>
+	</#list>
+<#else>
+	<#list keys as s>
+		var values${s_index}=[];
+		<#list resultMap["${s}"] as v>
+			var date="${v[1]}".split(" ")[0];
+			var timeArray=date.split("-");
+			var day=new Date(timeArray[0],timeArray[1]-1,timeArray[2]);
+			values${s_index}.push([day, ${v[0]}]);
+	    </#list>
+	</#list>
+</#if>
+var datasets = {
+	<#list keys as s>
+	"${s}": {
+		label: "${s}",
+		data: values${s_index}
+	}
+	<#if s_has_next>,</#if>
+	</#list>
+};
+$(function() {
+	var i = 0;
+	$.each(datasets, function(key, val) {
+		val.color = i;
+		++i;
+	});
+	plotAccordingToChoices();
+	$("<div id='tooltip'></div>").css({
+		position: "absolute",
+		display: "none",
+		border: "1px solid #fdd",
+		padding: "2px",
+		"background-color": "#fee",
+		opacity: 0.80
+	}).appendTo("body");
+
+	$("#placeholder").bind("plothover", function (event, pos, item) {
+		if (item) {
+			var x = item.datapoint[0].toFixed(0),
+				y = item.datapoint[1].toFixed(0);
+			$("#tooltip").html(item.series.label  + " = " + y)
+			.css({top: item.pageY+5, left: item.pageX+5})
+			.fadeIn(200);
+		} else {
+			$("#tooltip").hide();
+		}
+	});
+});
+function plotAccordingToChoices() {
+	var data = [];
+	<#list keys as s>
+	data.push(datasets["${s}"]);
+	</#list>
+	if (data.length > 0) {
+		$.plot("#placeholder", data,{
+			series: {
+				lines: {
+					show: true
+				},
+				points: {
+					show: true
+				}
+			},
+			grid: {
+				hoverable: true
+			},
+			yaxis: {
+				min: 0,tickDecimals: 0
+			},
+			pageX:"<@s.m 'cms.statistic.date'/>",
+			<#switch flag>
+			<#case 2>
+			xaxis: {
+				ticks: [1, 2, 3, 4, 5,6,7,8,9,10,11,12],
+				min:1,
+				max:12,
+				tickDecimals: 0,
+			    tickFormatter:function (val, axis) {
+			    	  return val;
+			    }
+			}
+			<#break>
+			<#case 3>
+			<#case 1>
+			xaxis: {
+				minTickSize: [1, "day"],
+				mode: "time",timezone: "browser",
+				timeformat: "%m/%d"
+			  }
+			<#break>
+			<#case 4>
+			xaxis: {
+				ticks: [0,1, 2, 3, 4, 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
+				min:0,
+				max:23,
+				tickDecimals: 0
+			 }	
+			<#default>
+			<#break>
+			</#switch>
+		});
+	}else{
+		$("#placeholder").html("<@s.m 'statistic.noresult'/>");
+	}
+	//饼图
+	var data = [
+		<#list keys as s>
+		{ label: "${s}",  data: [[1,${totalMap["${s}"]}]]}
+		<#if s_has_next>,</#if>
+		</#list>
+	];
+	<#if type??>
+	<#if type=="source"||type=="engine">
+	if (data.length > 0) {
+		$.plot('#pieplaceholder', data, {
+		    series: {
+		        pie: {
+		            show: true
+		        }
+		    },
+		    grid: {
+		        hoverable: true,
+		        clickable: true
+		    },
+		    legend: {
+		        show: false
+		    }
+		});
+	}
+	</#if>
+	</#if>
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "statistic.function.source"/></div>
+</div>
+<div class="statistic">
+  <div class="sta-tab" style="margin-top:0px;">
+    <div class="sta-tab-nav">
+    <a <#if flag==4>class="day on"<#else>class="day"</#if> target="rightFrame" href="v_list.do?flag=4&type=${type}"><span></span><@s.m "statistic.function.days"/></a>
+    <a <#if flag==1>class="month on"<#else>class="month"</#if> target="rightFrame" href="v_list.do?flag=1&type=${type}"><span></span><@s.m "statistic.function.month"/></a>
+    <a <#if flag==2>class="year on"<#else>class="year"</#if> target="rightFrame" href="v_list.do?flag=2&type=${type}"><span></span><@s.m "statistic.function.years"/></a>
+    <a <#if flag==3>class="int on"<#else>class="int"</#if> target="rightFrame" href="v_list.do?flag=3&type=${type}"><span></span><@s.m "statistic.report.section"/></a>
+    </div>
+    <div class="tab-con">
+      <#if flag==3>
+      <div class="tab-con-top">
+        <form action="v_list.do" target="rightFrame" >
+      	<input name="begin" value="${begin!?string('yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:100px; margin-right:8px;"/>
+        <input name="end" value="${end!?string('yyyy-MM-dd')}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:100px; margin-right:8px;"/>
+        <input name="flag" value="3" type="hidden"/>
+        <input type="submit" class="query" value="<@s.m 'global.query'/>" style="background-color:#3dc6ed;">
+        </form>
+      </div>
+      </#if>
+      <#if type??>
+	      <#if type=="source"||type=="engine">
+	       <div class="tab-main" style="padding-left:320px; position:relative;">
+	         <div id="pieplaceholder" style="width:300px;height:300px; position:absolute; left:10px; top:50px;"></div>
+	         <div id="placeholder"  style="float:left; width:640px;height:300px; top:50px;"></div>
+	        </div>
+	       <#else>
+	       <div class="tab-main" style="position:relative;">
+	       	<div id="placeholder"  style="float:left; width: 99%; height: 300px; top:50px;"></div>
+	        </div>
+	       </#if>
+	   <#else>
+	   <div class="tab-main" style="position:relative;">
+	   	<div id="placeholder"  style="float:left; width: 99%; height: 300px; top:50px;"></div>
+       </div>
+       </#if>
+    </div>
+  </div>
+</div>
+</body>
+</html>

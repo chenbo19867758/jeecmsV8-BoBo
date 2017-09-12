@@ -1,0 +1,14 @@
+<@childSite sites=siteList/>
+<#macro childSite sites>
+<#list sites as s>
+<#assign us=cmsAdmin.getUserSite(s.id)!/>
+<li>
+${s.shortName}
+<#assign id="${s.id}"/>
+<input type="checkbox" name="siteIds" id="siteId_${id}"  value="${s.id}" <#if siteIds?seq_contains(s.id)>checked="checked"</#if>/>
+<input id="step${id}" type="text" value="${us.checkStep!s.finalStep!}" size="2" maxlength="2"/>
+<input name="allChannels" id="allChannelHide_${id}" <#if us.allChannel??><#if us.allChannel>value="true"<#else>value="false"</#if><#else>value="false"</#if> type="hidden" />
+<input type="checkbox" id="allChannel_${id}" <#if !siteIds?seq_contains(s.id)> disabled="disabled"</#if>  <#if us.allChannel??>value="${us.allChannel?string('true','false')}"<#if us.allChannel>checked="checked"</#if></#if>  />
+</li>
+</#list>
+</#macro>

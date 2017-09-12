@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+	selectType();
+});
+function selectType(){
+	var type=$("#type").val();
+	if(type=="0"){
+		$("#jvForm tr:nth-child(2)").show();
+		$("#jvForm tr:nth-child(3)").show();
+		$("#jvForm tr:nth-child(4)").show();
+	}else{
+		$("#jvForm tr:nth-child(2)").hide();
+		$("#jvForm tr:nth-child(3)").hide();
+		$("#jvForm tr:nth-child(4)").hide();
+	}
+}
+</script>
+</head>
+<body>
+<#include "/common/image_upload.html"/>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cms.weixin.message.default"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_default_update.do" labelWidth="15">
+<@p.td  label="cms.weixin.message.type"  colspan="2">
+<@p.select id="type" onchange="selectType()" list={"0":"cms.weixin.message.type.0","1":"cms.weixin.message.type.1","2":"cms.weixin.message.type.2"} value=menu.type name="type" width="30"/>
+</@p.td><@p.tr/>
+<@p.text colspan="2" width="100" label="cms.weixin.message.title" name="title" value="${menu.title!}" required="true" class="required" maxlength="255"/><@p.tr/>
+<@p.text colspan="2" width="100" label="cms.weixin.message.url" name="url" value="${menu.url!}" maxlength="256"/><@p.tr/>
+<@p.td label="cms.weixin.message.pic" colspan="1" width="50" noHeight="true">
+<@p.text id="uploadImgPath1" name="path" value="${menu.path!}" style="width:220px"/> <input type="button" value="<@s.m "imageupload.preview"/>" onclick="previewImg(1);" class="preview-button"/><br/>
+<span id="ufc1" style="position:relative">
+<input type='text' id='uploadFileText1' size="14"/>  
+<input class="browse" type='button' value='<@s.m "global.browse"/>'/>
+<input onchange="$('#uploadFileText1').val(this.value)" size="14" type="file" id="uploadFile1" class="file-button"/>
+</span>
+<input type="hidden" id="mark1" value="false"/>
+ <input type="button" value="<@s.m "imageupload.upload"/>" onclick="upload(1);" class="upload-button"/><br/>
+</@p.td>
+<@p.td colspan="1" width="50">
+<img id="preImg1" src="${menu.path!}" alt="<@s.m "imageupload.preview"/>" style="width:100px;height:70px;background-color:#ccc;border:1px solid #333"/>
+</@p.td>
+<@p.tr/>
+<@p.textarea  cols="70" rows="3" maxlength="255"  label="cms.weixin.message.content" name="content" value="${menu.content!}"  colspan="2" width="100"/><@p.tr/>
+<@p.td colspan="2"><@p.hidden name="id" value=menu.id/><@p.submit code="global.submit"/> &nbsp; <@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

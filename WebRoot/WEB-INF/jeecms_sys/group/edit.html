@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+//当前所选站点
+var selectSiteId;
+$(function() {
+	$("#jvForm").validate();
+	//获取站点数据
+	$.post("v_site_list.do",function(s) {
+		$(s).appendTo("#viewSiteTree");
+		$("#viewSiteTree").treeview({collapsed:true});
+	},"html");
+	$.post("v_site_contri_list.do",function(s) {
+		$(s).appendTo("#contriSiteTree");
+		$("#contriSiteTree").treeview({collapsed:true});
+	},"html");
+	//栏目权限对话框
+	$("#channelDialog").dialog({
+		autoOpen: false,
+		modal: true,
+		width: 280,
+		height: 420,
+		position: ["center",20],
+		buttons: {
+			"OK": function() {
+				$(this).dialog("close");
+			}
+		},
+		close: function(event, ui) {
+			//将列表框中已选中的项复制到隐藏表单中
+			var s="";
+			$("#channels").children().each(function(){
+				if($(this).prop("selected")) {
+					s += "<input type='hidden' name='viewChannelIds' value='" +$(this).val()+ "'/>";
+				}
+			});
+			$("#channelIdsContainer"+selectSiteId).empty().append(s);
+		}
+	});
+	$("#channelDialogContri").dialog({
+		autoOpen: false,
+		modal: true,
+		width: 280,
+		height: 420,
+		position: ["center",20],
+		buttons: {
+			"OK": function() {
+				$(this).dialog("close");
+			}
+		},
+		close: function(event, ui) {
+			//将列表框中已选中的项复制到隐藏表单中
+			var s="";
+			$("#channelsContri").children().each(function(){
+				if($(this).prop("selected")) {
+					s += "<input type='hidden' name='contriChannelIds' value='" +$(this).val()+ "'/>";
+				}
+			});
+			$("#channelIdsContainerContri"+selectSiteId).empty().append(s);
+		}
+	});
+});
+function channelOpen(siteId){
+	selectSiteId=siteId;
+	//清空
+	$("#channels").html("");
+	var selectChannelIdArray= new Array();
+	$("#channelIdsContainer"+siteId).children().each(function(){
+		selectChannelIdArray.push($(this).val());
+	});
+	//获取数据
+	$.post("v_channels_edit.do",{"siteId":siteId,"groupId":${cmsGroup.id},"type":1},function(s) {
+		$(s).appendTo("#channels");
+		processChannelSelected(selectChannelIdArray);
+	},"html");
+	$('#channelDialog').dialog('open');
+}
+function processChannelSelected(selectArray){
+	$("#channels option").each(function(i){
+		if($.inArray($(this).val(), selectArray)!=-1)
+		{
+			$(this).prop("selected","selected");
+		}
+	});
+}
+function contriChannelOpen(siteId){
+	selectSiteId=siteId;
+	//清空
+	$("#channelsContri").html("");
+	var selectChannelIdArray= new Array();
+	$("#channelIdsContainerContri"+siteId).children().each(function(){
+		selectChannelIdArray.push($(this).val());
+	});
+	//获取数据
+	$.post("v_channels_edit.do",{"siteId":siteId,"groupId":${cmsGroup.id},"type":0},function(s) {
+		$(s).appendTo("#channelsContri");
+		processContriChannelSelected(selectChannelIdArray);
+	},"html");
+	$('#channelDialogContri').dialog('open');
+}
+function processContriChannelSelected(selectArray){
+	$("#channelsContri option").each(function(i){
+		if($.inArray($(this).val(), selectArray)!=-1)
+		{
+			$(this).prop("selected","selected");
+		}
+	});
+}
+function allChannels(chk) {
+	if(chk) {
+		$("#channels").children().each(function(){$(this).prop("selected","selected")});
+	}else{
+		$("#channels").children().each(function(){$(this).prop("selected","")});
+	} 
+}
+function allChannelsContri(chk) {
+	if(chk) {
+		$("#channelsContri").children().each(function(){$(this).prop("selected","selected")});
+	}else{
+		$("#channelsContri").children().each(function(){$(this).prop("selected","")});
+	} 
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsGroup.function"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input type="button" value="<@s.m "global.backToList"/>" onclick="history.back();" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<#assign groupnameExist><@s.m "error.groupnameExist"/></#assign>
+<@p.form id="jvForm" action="o_update.do" labelWidth="15" class="formDefStyle">
+<@p.text colspan="1" width="50" label="cmsGroup.name" name="name" value=cmsGroup.name required="true" class="required" vld="{required:true,username:true,remote:'v_check_name.do?gid=${cmsGroup.id}',messages:{remote:'${groupnameExist}'}}" maxlength="100"/>
+<@p.text colspan="1" width="50" label="cmsGroup.priority" name="priority" value=cmsGroup.priority required="true" class="required digits" maxlength="10"/><@p.tr/>
+<@p.text colspan="1" width="50" label="cmsGroup.allowPerDay" name="allowPerDay" value=cmsGroup.allowPerDay style="width:70px" required="true" class="required digits" maxlength="10" help="cmsGroup.allowPerDay.help"/>
+<@p.text colspan="1" width="50" label="cmsGroup.allowMaxFile" name="allowMaxFile" value=cmsGroup.allowMaxFile style="width:70px" required="true" class="required digits" maxlength="10" help="cmsGroup.allowMaxFile.help"/><@p.tr/>
+<@p.text colspan="2"label="cmsGroup.allowSuffix"  name="allowSuffix" value=cmsGroup.allowSuffix style="width:350px" maxlength="255" help="cmsGroup.allowSuffix.help"/><@p.tr/>
+<@p.radio colspan="1" width="50" label="cmsGroup.needCheck" name="needCheck" value=cmsGroup.needCheck list={"true":"global.true","false":"global.false"}/>
+<@p.radio colspan="1" width="50" label="cmsGroup.needCaptcha" name="needCaptcha" value=cmsGroup.needCaptcha list={"true":"global.true","false":"global.false"}/><@p.tr/>
+<@p.td colspan="2" label="channel.viewGroupIds" required="true">
+	<ul id="viewSiteTree" class="filetree">
+    	<li><@s.m "cmsUser.site"/>&nbsp;&nbsp;<@s.m "channel.viewGroupIds"/></li>
+    </ul>	
+	<#list siteList as site>
+	<span id="channelIdsContainer${site.id}">
+		<#list viewGroupIds[site.id?string] as channelId>
+		<input type="hidden" name="viewChannelIds" value="${channelId!}"/>
+		</#list>
+	</span>
+	</#list>
+	<div id="channelDialog" title="<@s.m "cmsUser.channels"/>" style="display:none;">
+		<label><input type="checkbox" onclick="allChannels(this.checked)"/><@s.m "cmsUser.channels.allChannel"/></label>
+		<select id="channels"  multiple="multiple" size="15" style="width:100%; height:auto;"></select>
+	</div>
+<div style="clear:both"></div>
+</@p.td><@p.tr/>
+<@p.td colspan="2" label="channel.contriGroupIds" required="true">
+	<ul id="contriSiteTree" class="filetree">
+    	<li><@s.m "cmsUser.site"/>&nbsp;&nbsp;<@s.m "channel.contriGroupIds"/></li>
+    </ul>
+    <#list siteList as site>
+	<span id="channelIdsContainerContri${site.id}">
+		<#list contriGroupIds[site.id?string] as channelId>
+		<input type="hidden" name="contriChannelIds" value="${channelId!}"/>
+		</#list>
+	</span>
+	</#list>
+	<div id="channelDialogContri" title="<@s.m "cmsUser.channels"/>" style="display:none;">
+		<label><input type="checkbox" onclick="allChannelsContri(this.checked)" /><@s.m "cmsUser.channels.allChannel"/></label>
+		<select id="channelsContri"  multiple="multiple" size="15" style="width:100%; height:auto;"></select>
+	</div>
+	<div style="clear:both"></div>
+</@p.td>
+<@p.tr/>
+<@p.td colspan="2"><@p.hidden name="id" value=cmsGroup.id/><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

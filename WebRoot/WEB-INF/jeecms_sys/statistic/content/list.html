@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<link href="${base}/res/common/css/jquery.flot.css" rel="stylesheet" type="text/css"/>
+<!--[if lte IE 8]><![endif]-->
+<script src="${base}/res/common/js/excanvas.min.js" type="text/javascript" ></script>
+<script src="${base}/res/common/js/jquery.flot.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.time.min.js" type="text/javascript"></script>
+<script src="${base}/res/common/js/jquery.flot.categories.min.js" type="text/javascript"></script>
+<script class="code" type="text/javascript">
+var dayData=[],monthData=[],yearData=[];
+<!--小时或者月pv-->
+<#if dayList??>
+<#list dayList as s>
+	dayData.push([${s[1]}, ${s[0]!}]);
+</#list>
+</#if>
+<#if yearList??>
+<#list yearList as s>
+	yearData.push([${s[1]}, ${s[0]!}]);
+</#list>
+</#if>
+<#if monthList??>
+<#list monthList as s>
+	monthData.push([${s[1]}, ${s[0]!}]);
+</#list>
+</#if>
+var datasets = {
+	<#if dayList??>
+	"day":{
+		label: "<@s.m 'statistic.function.content'/>",
+		data: dayData
+	}
+	</#if>
+	<#if monthList??>
+	"month":{
+		label: "<@s.m 'statistic.function.content'/>",
+		data: monthData
+	}
+	</#if>
+	<#if yearList??>
+	"year":{
+		label: "<@s.m 'statistic.function.content'/>",
+		data: yearData
+	}
+	</#if>
+};
+var i = 0;
+$.each(datasets, function(key, val) {
+	val.color = i;
+	++i;
+});
+$(function() {
+	plotAccordingToChoices();
+	$("<div id='tooltip'></div>").css({
+		position: "absolute",
+		display: "none",
+		border: "1px solid #fdd",
+		padding: "2px",
+		"background-color": "#fee",
+		opacity: 0.80
+	}).appendTo("body");
+	$("#placeholder").bind("plothover", function (event, pos, item) {
+		if (item) {
+			var x = item.datapoint[0].toFixed(0),
+				y = item.datapoint[1].toFixed(0);
+			$("#tooltip").html(item.series.label  + " = " + y)
+			.css({top: item.pageY+5, left: item.pageX+5})
+			.fadeIn(200);
+		} else {
+			$("#tooltip").hide();
+		}
+	});
+});
+function plotAccordingToChoices() {
+	var data = [];
+	<#switch statisticModel>
+	<#case "year">
+	data.push(datasets["year"]);
+	if (data.length > 0) {
+		$.plot("#placeholder", data,{
+			series: {
+				lines: {
+					show: true
+				},
+				points: {
+					show: true
+				}
+			},
+			grid: {
+				hoverable: true
+			},
+			yaxis: {
+				min: 0,tickDecimals: 0
+			},
+			pageX:"<@s.m 'cms.statistic.date'/>",
+			xaxis: {
+				ticks: [1, 2, 3, 4, 5,6,7,8,9,10,11,12],
+				min:1,
+				max:12,
+				tickDecimals: 0,
+			    tickFormatter:function (val, axis) {
+			    	  return val;
+			    }
+			}
+		});
+	}	
+	<#break>
+	<#case "month">
+	data.push(datasets["month"]);
+	if (data.length > 0) {
+		$.plot("#placeholder", data,{
+			series: {
+				lines: {
+					show: true
+				},
+				points: {
+					show: true
+				}
+			},
+			grid: {
+				hoverable: true
+			},
+			yaxis: {
+				min: 0,tickDecimals: 0
+			},
+			pageX:"<@s.m 'cms.statistic.date'/>",
+			xaxis: { tickDecimals: 0, tickSize: 1 }
+		});
+	}	
+	<#break>
+	<#case "day">
+	data.push(datasets["day"]);
+	if (data.length > 0) {
+		$.plot("#placeholder", data,{
+			series: {
+				lines: {
+					show: true
+				},
+				points: {
+					show: true
+				}
+			},
+			grid: {
+				hoverable: true
+			},
+			yaxis: {
+				min: 0,tickDecimals: 0
+			},
+			pageX:"<@s.m 'cms.statistic.date'/>",
+			xaxis: {
+				ticks: [0,1, 2, 3, 4, 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
+				min:0,
+				max:23,
+				tickDecimals: 0
+			 }	
+		});
+	}
+	<#default>
+	<#break>
+	</#switch>
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cms.function.statistic"/> > <@s.m "statistic.function.content"/></div>
+</div>
+<div class="statistic">
+  <div class="five">
+    <div class="item" style="margin-left:0;">
+      <p class="eng">TODAY</p>
+      <p class="coun timer" data-to="${releaseDayCount!}" data-speed="1000"></p>
+      <p class="chi"><@s.m "statistic.by.day"/></p>
+    </div>
+    <div class="item">
+      <p class="eng">THIS WEEK</p>
+      <p class="coun timer" data-to="${releaseWeekCount!}" data-speed="1000"></p>
+      <p class="chi"><@s.m "statistic.by.week"/></p>
+    </div>
+    <div class="item">
+      <p class="eng">THIS MONTH</p>
+      <p class="coun timer" data-to="${releaseMonthCount!}" data-speed="1000"></p>
+      <p class="chi"><@s.m "statistic.by.month"/></p>
+    </div>
+    <div class="item">
+      <p class="eng">THIS YEAR</p>
+      <p class="coun timer" data-to="${releaseYearCount!}" data-speed="1000"></p>
+      <p class="chi"><@s.m "statistic.by.year"/></p>
+    </div>
+    <div class="item">
+      <p class="eng">TOTAL</p>
+      <p class="coun timer" data-to="${releaseTotalCount!}" data-speed="1000"></p>
+      <p class="chi"><@s.m "statistic.content.totalContents"/></p>
+    </div>
+    <script src="${base}/res/jeecms/js/index.js" type="text/javascript"></script>
+  </div>
+  <div class="sta-tab">
+    <div class="sta-tab-nav">
+    <a <#if statisticModel=="day">class="day on"<#else>class="day"</#if>target="rightFrame" href="v_list.do?queryModel=day"><span></span><@s.m "statistic.function.days"/></a>
+    <a <#if statisticModel=="month">class="month on"<#else>class="month"</#if>class="month on" target="rightFrame" href="v_list.do?queryModel=month"><span></span><@s.m "statistic.function.month"/></a>
+    <a <#if statisticModel=="year">class="year on"<#else>class="year"</#if>class="year" target="rightFrame" href="v_list.do?queryModel=year"><span></span><@s.m "statistic.function.years"/></a>
+    </div>
+    <div class="tab-con">
+      <div class="tab-con-top">
+        <form action="v_list.do" target="rightFrame" >
+      	<input name="queryModel" value="${statisticModel!}" type="hidden"/>
+      	<select id="channelId" name="channelId" style="width:130px; margin-right:8px; margin-left:14px;">
+		<option value="" <#if !channelId??>selected="selected"</#if>><@s.m "global.pleaseSelect"/></option>
+		<#if channelList?size gt 0>
+		<#assign origDeep=channelList[0].deep+1/>
+		<#list channelList as c>
+			<#if c.hasContent || c.child?size gt 0>
+			<option <#if channelId??&&c.id==channelId>selected="selected"</#if> value="${c.id}"><#if c.deep gte origDeep><#list origDeep..c.deep as i>&nbsp;&nbsp;</#list>></#if>${c.name}</option>
+			</#if>
+		</#list>
+		</#if>
+		</select>
+        <input type="submit" class="query" value="<@s.m 'global.query'/>" style="background-color:#3dc6ed;">
+        </form>
+        
+        <a class="change-tab txt"><@s.m 'statistic.display.table'/></a></div>
+      
+      
+      <div class="tab-main">
+        <div>
+			<div id="placeholder" class="demo-placeholder" style="float:left; width:99%; height:380px;"></div>
+		</div>
+      </div>
+      
+      <script type="text/javascript">
+		$(document).ready(function () {
+          $(".change-tab").click(function(){
+			if($(this).text() == "<@s.m 'statistic.display.table'/>"){
+			  $(this).text("<@s.m 'statistic.display.img'/>");
+			  $(this).removeClass('txt');
+		      $(this).addClass('img');
+			  $(".tab-main").css("display","none");
+			  $(".tab-pic-main").css("display","block"); 
+				}else{
+			  $(this).text("<@s.m 'statistic.display.table'/>");
+			  $(this).removeClass('img');
+			  $(this).addClass('txt');
+			  $(".tab-main").css("display","block");
+			  $(".tab-pic-main").css("display","none");  
+			  }
+		  })
+		});
+	  </script>
+      <div class="tab-pic-main">
+        <table cellpadding="0" cellspacing="0">
+          <tbody>
+            <tr class="hui">
+	            <td class="hui">
+	            	<#switch statisticModel>
+					<#case "year">
+						<@s.m "statistic.month2"/>
+					<#break>
+					<#case "month">
+						<@s.m "statistic.date2"/>
+					<#break>
+					<#case "day">
+						<@s.m "statistic.hour"/>
+					<#default>
+					<#break>
+					</#switch>
+	            </td>
+	            <td><@s.m "channel.contentcounttotal"/></td>
+	            <td><@s.m "statistic.percent"/></td>
+            </tr>
+            <#list list as cmsStatistic>
+            <tr>
+            <td class="hui">
+            <#switch statisticModel>
+				<#case "year">
+					${cmsStatistic.description}<@s.m "statistic.month"/>
+				<#break>
+				<#case "month">
+					${cmsStatistic.description}<@s.m "statistic.date"/>
+				<#break>
+				<#case "day">
+					${cmsStatistic.description}
+				<#default>
+				<#break>
+			</#switch>
+            </td>
+            <td>${cmsStatistic.count}</td>
+            <td><img src="${base}/res/jeecms/img/admin/vote_bar.gif" width="${cmsStatistic.barWidth}" height="10px" border="0"/>${cmsStatistic.percent}</td>
+            </tr>
+            </#list>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

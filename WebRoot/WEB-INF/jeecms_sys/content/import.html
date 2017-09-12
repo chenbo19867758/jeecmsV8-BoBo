@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$.validator.methods.leafChannel = function(value, element, param) {
+	var i = element.selectedIndex;
+	return $(element.options[i]).attr("class")!="sel-disabled";
+}
+$(function() {
+	$("#jvForm").validate({
+		rules: {
+			channelId: {
+				required: true,
+				leafChannel: true
+			}
+		},
+		messages:{
+			channelId: {
+				leafChannel: "<@s.m "content.error.notLeafChannel"/>"
+			}
+		}
+	});
+});
+</script>
+</head>
+<body>
+<div class="box-positon">
+	<div class="rpos"><@s.m "global.position"/>: <@s.m "content.function"/> - <@s.m "global.add"/></div>
+	<form class="ropt">
+		<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='v_list.do';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<#include "doc_upload.html"/>
+<@p.form id="jvForm" action="import_docs.do">
+	<table id="docTable" border="0">
+	<tr>
+		<td colspan="4">
+			<select id="channelId" name="channelId">
+			<#if !channel??>
+				<option value="" class="sel-disabled"><@s.m "global.pleaseSelect"/></option>
+			</#if>
+			<#if channelList?size gt 0>
+			<#assign origDeep=channelList[0].deep+1/>
+			<#list channelList as c>
+				<#if c.hasContent || c.child?size gt 0>
+				<option value="${c.id}"<#if c.model.id != model.id || c.child?size gt 0> class="sel-disabled"</#if>><#if c.deep gte origDeep><#list origDeep..c.deep as i>&nbsp;&nbsp;</#list>></#if>${c.name}</option>
+				</#if>
+			</#list>
+			</#if>
+			</select> 
+			<select name="typeId">
+				<#list typeList as type>
+					<option value="${type.id}">${type.name}</option>
+				</#list>
+			</select>
+			<input type="checkbox" name="draft" value="true"/><@s.m "content.draft"/>
+			<@s.m "openoffice.help"/>
+		</td>
+	</tr>
+	<tr>
+		<td align="center"><input class="add" type="button" onclick="addAttachLine();" value="<@s.m "content.attachmentAddLine"/>"/></td>
+		<td align="center"><@s.m "content.doc.name"/></td>
+		<td align="center"><@s.m "content.doc.path"/></td>
+		<td align="center"><@s.m "content.fileUpload"/></td>
+	</tr>
+	<#list 0..0 as i>
+	<tr id="attachTr${i}">
+		<td align="center"><a onclick="$('#docTr${i}').remove();" href="javascript:void(0);" class="pn-opt"><@s.m "content.attachmentDelLine"/></a></td>
+		<td align="center"><input type="text" id="docNames${i}" name="docNames"/></td>
+		<td align="center"><input type="text" id="docPaths${i}" name="docPaths"/></td>
+		<td align="center">
+			<span id="afc${i}" style="position:relative;display:block;width:300px;*width:300px;">
+			<input type='text' id='docText${i}'/>  
+			<input class="browse" type='button' value='<@s.m "global.browse"/>'/>
+			<input onchange="$('#docText${i}').val(this.value)" size="19" type="file" name="docFile" id="docFile${i}" style="height:24px;opacity:0;filter:alpha(opacity=0);position:absolute;right:69px;top:2px;"/>
+			<input type="button" value="<@s.m "content.fileUpload"/>" onclick="uploadDoc(${i});" class="upload-button"/>
+			</span>
+			<input type="hidden" id="docFilenames${i}" name="docFilenames"/>
+		</td>
+		</tr>
+	</#list>
+	<textarea id="docTr" style="display:none">
+	<tr id="docTr{0}">
+		<td align="center"><a onclick="$('#docTr{0}').remove();" href="javascript:void(0);" class="pn-opt"><@s.m "content.attachmentDelLine"/></a></td>
+		<td align="center"><input type="text" id="docNames{0}" name="docNames"/></td>
+		<td align="center"><input type="text" id="docPaths{0}" name="docPaths"/></td>
+		<td align="center">
+			<span id="afc{0}" style="position:relative;display:block;width:300px;*width:300px;">
+			<input type='text' id='docText{0}'/>  
+			<input class="browse" type='button' value='<@s.m "global.browse"/>'/>
+			<input onchange="$('#docText{0}').val(this.value)" size="19" type="file" name="docFile" id="docFile{0}" style="height:24px;opacity:0;filter:alpha(opacity=0);position:absolute;right:69px;top:2px;"/>
+			<input type="button" value="<@s.m "content.fileUpload"/>" onclick="uploadDoc({0});" class="upload-button"/>
+			</span>
+			<input type="hidden" id="docFilenames{0}" name="docFilenames"/>
+		</td>
+	</tr>
+	</textarea>
+	<tr>
+		<td></td>
+		<td>
+		<input type="hidden" name="modelId" value="${model.id}"/>
+		<input  class="submit" type="submit" value="<@s.m 'global.submit'/>"  />
+		</td>
+		<td><input  class="reset" type="reset" value="<@s.m 'global.reset'/>" /></td>
+		<td></td>
+	</tr>
+	</table>
+	<script type="text/javascript">
+	var attachIndex = 1;
+	var attachTpl = $.format($("#docTr").val());
+	function addAttachLine() {
+		$('#attachTr0').after(attachTpl(attachIndex++));
+	}
+	</script>
+</@p.form>
+</div>
+</body>
+</html>

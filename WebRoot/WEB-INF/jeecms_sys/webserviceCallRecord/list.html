@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+function optDelete() {
+	if(Pn.checkedCount('ids')<=0) {
+		alert("<@s.m 'error.checkRecord'/>");
+		return;
+	}
+	if(!confirm("<@s.m 'global.confirm.delete'/>")) {
+		return;
+	}
+	var f = getTableForm();
+	f.action="o_delete.do";
+	f.submit();
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsWebserviceCallRecord.function"/> > <@s.m "global.list"/></div>
+</div>
+<div class="body-box">
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<@p.table value=pagination;cmsWebserviceCallRecord,i,has_next><#rt/>
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<input type='checkbox' name='ids' value='${cmsWebserviceCallRecord.id}'/><#t/>
+	</@p.column><#t/>
+	<@p.column title="ID">${cmsWebserviceCallRecord.id}</@p.column><#t/>
+	<@p.column code="cmsWebserviceCallRecord.operate"><@s.m "cmsWebservice.call.${cmsWebserviceCallRecord.serviceCode!}"/></@p.column><#t/>
+	<@p.column code="cmsWebserviceAuth.username">${cmsWebserviceCallRecord.auth.username!}</@p.column><#t/>
+	<@p.column code="cmsWebserviceAuth.system">${cmsWebserviceCallRecord.auth.system!}</@p.column><#t/>
+	<@p.column code="cmsWebserviceCallRecord.recordTime">${cmsWebserviceCallRecord.recordTime!?string("yyyy-MM-dd HH:mm:ss")}</@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<a href="o_delete.do?ids=${cmsWebserviceCallRecord.id}&pageNo=${pageNo!}" onclick="if(!confirm('<@s.m "global.confirm.delete"/>')) {return false;}"><@s.m "global.delete"/></a><#t/>
+	</@p.column><#t/>
+</@p.table>
+<div><input class="del-button"  type="button" value="<@s.m "global.delete"/>" onclick="optDelete();"/></div>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

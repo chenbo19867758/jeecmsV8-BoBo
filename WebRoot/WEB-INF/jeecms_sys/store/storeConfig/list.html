@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+function optDelete() {
+	if(Pn.checkedCount('ids')<=0) {
+		$.alert("<@s.m 'global.prompt'/>","<@s.m 'error.checkRecord'/>");
+		return;
+	}
+	$.confirm(doDelete);
+}
+function doDelete(){
+	var f = getTableForm();
+	f.action="o_delete.do";
+	f.submit();
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "plugStore.center"/></div>
+</div>
+<div class="box-positon">
+	<form class="ropt">
+		<input class="add" type="submit" value="<@s.m "plugStoreConfig.function"/>" onclick="this.form.action='v_config.do';"/>
+	</form>
+	<form class="ropt" method="post" action="v_center.do">
+	    <@s.m "cms.storeplug.type"/>:<@p.select name="productType" value="${productType!}" list={"1":"cms.storeplug.type.1","2":"cms.storeplug.type.2","3":"cms.storeplug.type.3"} headerKey="" headerValue="global.pleaseSelect"/>
+		<input type="submit" value="<@s.m 'global.query'/>" class="query" />
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<input type="hidden" name="productType" value="${productType!}"/>
+<@p.table listAction="v_center.do" value=pagination;storeplug,i,has_next><#rt/>
+	<@p.column title="ID" align="center">${storeplug.id}</@p.column><#t/>
+	<@p.column code="cms.storeplug.type" align="center"><@s.m "cms.storeplug.type.${storeplug.type}"/></@p.column><#t/>
+	<@p.column code="cms.storeplug.title" align="center">${storeplug.title!}</@p.column><#t/>
+	<@p.column code="cms.storeplug.shortDesc" align="center"><@text_cut s=storeplug.shortDesc?html len=25 append="..."/></@p.column><#t/>
+	<@p.column code="cms.storeplug.releaseDate" align="center">${storeplug.releaseDate!}</@p.column><#t/>
+	<@p.column code="cms.storeplug.chargeAmount" align="center"><#if storeplug.isCharge>${storeplug.chargeAmount!}<#else><@s.m "cms.storeplug.chargeFree"/></#if></@p.column><#t/>
+	<@p.column code="global.operate" align="center">
+		<a href="${plugUrlPrefix!}/${storeplug.id}.jspx" target="_blank" class="pn-opt"><@s.m "global.view"/></a><#rt/>
+	</@p.column><#t/>
+</@p.table>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

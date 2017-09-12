@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<#include "/common/image_upload.html"/>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cms.weixin.weixin"/>  <@s.m "global.edit"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_update.do" labelWidth="15" class="formDefStyle">
+<input type="hidden" name="pageNo" value="${pageNo!}" />
+<@p.password colspan="1" width="50" label="App Key" value=site.attr["wxAppkey"] name="wxAppkey"  maxlength="255"  help="cms.weixin.secret.help"/>
+<@p.password colspan="1" width="50" label="App Secret"  name="wxAppSecret"  maxlength="255" help="cms.weixin.secret.help"/><@p.tr/>
+<@p.textarea  cols="70" rows="3" maxlength="255"  label="cms.weixin.message.welcome"  value=weixin.welcome name="welcome" required="true" class="required" colspan="2"  width="100"/><@p.tr/>
+<@p.td id="linkLogo" label="cms.weixin.logo" colspan="1" width="50" noHeight="true">
+<@p.text id="uploadImgPath0" name="pic" value=weixin.pic style="width:180px"/> <input class="preview-button" type="button" value="<@s.m "imageupload.preview"/>" onclick="previewImg(0);"/><br/>
+<span id="ufc0" style="position:relative">
+<input type='text' id='uploadFileText0' size="14"/>  
+<input class="browse" type='button' value='<@s.m "global.browse"/>'/>
+<input onchange="$('#uploadFileText0').val(this.value)" size="14" type="file" id="uploadFile0" class="file-button"/>
+</span>
+<input type="hidden" id="mark0" value="false"/> <input class="upload-button" type="button" value="<@s.m "imageupload.upload"/>" onclick="upload(0);"/><br/>
+</@p.td><@p.td colspan="1" width="50">
+<img id="preImg0" src="${weixin.pic!}" alt="<@s.m "imageupload.preview"/>" style="width:150px;height:100px;background-color:#ccc;border:1px solid #333"/>
+</@p.td><@p.tr/>
+
+<@p.td colspan="2"><@p.hidden name="id" value=weixin.id/><@p.submit code="global.submit"/> &nbsp; <@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

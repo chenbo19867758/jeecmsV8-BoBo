@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsAccountPay.function"/> > <@s.m "cmsAccountPay.pay"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='v_list.do';" class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="payByWeiXin.do" labelWidth="15" class="formDefStyle">
+<@p.td colspan="2" width="100" label="cmsAccountDraw.applyAccount">
+	${draw.applyAccount!}
+</@p.td><@p.tr/>
+<@p.td colspan="2" width="100" label="cmsAccountDraw.applyAmount">
+	${draw.applyAmount!}
+</@p.td><@p.tr/>
+<@p.password width="100" colspan="2" label="login.password" id="password" name="password" maxlength="100" /><@p.tr/>
+<@p.text width="50" colspan="1" label="login.captcha" name="captcha" maxlength="100" />
+<@p.td width="50" colspan="1" >
+	<img src="${base}/captcha.svl" onclick="this.src='${base}/captcha.svl?d='+new Date()*1"/>
+</@p.td><@p.tr/>
+<input type="hidden" name="drawId" value="${draw.id!}"/>
+<@p.td colspan="2"><@p.submit code="global.submit"/> &nbsp; <@p.reset code="global.reset" /></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

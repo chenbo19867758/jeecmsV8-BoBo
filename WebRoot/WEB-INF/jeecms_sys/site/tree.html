@@ -1,0 +1,30 @@
+<#if isRoot>
+[{
+	"text": "<a href='v_list.do' target='siteRightFrame'><@s.m "cmsSite.top"/></a>",
+	"classes": "folder"
+	<#if list?size gt 0>,
+	"expanded": true,
+	"children": [
+	<#list list as site>
+		{
+		"id": "${site.id}",
+		"text": "<a href='v_edit.do?id=${site.id}' target='siteRightFrame'>${site.name}</a>",
+		"classes": "file",
+		"hasChildren": false
+		}<#if site_has_next>,</#if>
+	</#list>
+	]
+	</#if>
+}]
+<#else>
+	[
+	<#list list as site>
+		{
+		"id": "${site.id}",
+		"text": "<a href='v_edit.do?id=${site.id}' target='siteRightFrame'>${site.name}</a>",
+		"classes": "file",
+		"hasChildren": false
+		}<#if site_has_next>,</#if>
+	</#list>
+	]
+</#if>

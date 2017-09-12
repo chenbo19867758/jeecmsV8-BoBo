@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "plugStoreConfig.function"/> > <@s.m "plugStoreConfig.function.login"/></div>
+</div>
+<div class="body-box">
+	<@s.m "cms.plugStore.password.error"/><br/>
+	<form>
+		<input class="return-button" type="submit" value="<@s.m 'cms.plugStore.relogin'/>" onclick="this.form.action='v_config.do';"/>
+	</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

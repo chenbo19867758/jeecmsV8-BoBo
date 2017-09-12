@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsSiteConfig.function"/> > <@s.m "cmsConfig.function.sso"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="box-positon">
+	<@p.button code="global.add" class="add" onclick="addSsoLine()"/> 
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_sso_update.do" labelWidth="15" class="formDefStyle">
+<@p.radio width="100" colspan="2" label="cmsConfig.ssoEnable" name="attr_ssoEnable" list={"true":"global.true","false":"global.false"} value=configAttr.ssoEnable required="true" class="required" /><@p.tr/>
+<@p.td colspan="2" label="cmsConfig.ssoUrl">
+<#list ssoMap?keys as sso>
+<table id="ssoTable${sso_index+1}" border="0" >
+<tr>
+	<td>
+		<div><input type="text" id="sso_${sso_index+1}" name="attr_${sso!}" value="${ssoMap[sso]!}" style="width:460px"/> <a href="javascript:void(0);" onclick="$('#ssoTable${sso_index+1}').remove();" class="pn-opt"><@s.m "global.delete"/></a></div>
+	</td>
+</tr>
+</table>
+</#list>
+<div id="ssoBefore" style="clear:both"></div>
+<textarea id="ssoTable" style="display:none;">
+<table id="ssoTable{0}" border="0" >
+<tr >
+	<td>
+		<div><input type="text" id="sso_{0}" name="attr_sso_{0}" style="width:460px"/> <a href="javascript:void(0);" onclick="$('#ssoTable{0}').remove();" class="pn-opt"><@s.m "global.delete"/></a></div>
+	</td>
+</tr>
+</table>
+</textarea>
+<script type="text/javascript">
+var ssoIndex = ${ssoMap?keys?size+1};
+var ssoTpl = $.format($("#ssoTable").val());
+function addSsoLine() {
+	$('#ssoBefore').before(ssoTpl(ssoIndex++));
+}
+</script>
+</@p.td><@p.tr/>
+<@p.td colspan="2"><@p.submit code="global.submit" class="submit"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

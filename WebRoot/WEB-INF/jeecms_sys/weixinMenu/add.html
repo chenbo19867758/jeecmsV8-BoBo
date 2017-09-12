@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+	typeSelect();
+});
+function typeSelect(){
+	var checked=$("input[name='type']:checked").val();
+	if(checked=="click"){
+		$("#jvForm tr:nth-child(3)").show();
+		$("#jvForm tr:nth-child(4)").hide();
+	}else{
+		$("#jvForm tr:nth-child(3)").hide();
+		$("#jvForm tr:nth-child(4)").show();
+	}
+}
+</script>
+</head>
+<body>
+<#include "/common/image_upload.html"/>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cms.weixin.menu"/> > <@s.m "global.add"/></div>
+</div>
+<div class="box-positon ck">
+	<form class="ropt">
+		<input type="hidden" name="parentId" value="${parentId!}" />
+		<input type="hidden" name="pageNo" value="${pageNo!}" />
+		<input type="submit" value="<@s.m "global.backToList"/>" onclick="this.form.action='v_list.do';"  class="return-button"/>
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_save.do" labelWidth="15">
+<input type="hidden" name="parentId" value="${parentId!}" />
+<input type="hidden" name="pageNo" value="${pageNo!}" />
+<@p.text colspan="2" width="100" label="cms.weixin.menu.name" name="name" required="true" class="required" maxlength="32"/><@p.tr/>
+<@p.td colspan="2" label="cms.weixin.menu.type">
+<input type="radio" name="type" value="click" checked="checked" onclick="typeSelect()" /><@s.m "cms.weixin.menu.type.click"/>&nbsp;&nbsp;&nbsp;
+<input type="radio" name="type" value="view" onclick="typeSelect()"/><@s.m "cms.weixin.menu.type.view"/>
+</@p.td><@p.tr/>
+<@p.text colspan="2" width="100" label="KEY" name="key" maxlength="128" help="cms.weixin.menu.type.click.help"/><@p.tr/>
+<@p.text colspan="2" width="100" label="cms.weixin.menu.url" name="url" maxlength="256"/><@p.tr/>
+<@p.td colspan="2"><@p.submit code="global.submit"/> &nbsp; <@p.reset code="global.reset"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+function getTableForm() {
+	return document.getElementById('tableForm');
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "content.buy.record.function"/> > <@s.m "global.list"/></div>
+</div>
+<div class="body-box">
+<form action="user_order_list.do" method="post">
+<div style="padding-top:5px; padding-bottom:5px; text-indent:10px; border-bottom:1px solid #fff; border-top:1px solid #fff;">
+<@s.m "content.buy.orderNumber"/>:<input name="orderNum" value="${orderNum!}" type="text"/>
+<@s.m "content.buy.buyUser"/>:<input name="buyusername" value="${buyusername!}" type="text"/>
+<@s.m "content.buy.authorUser"/>:<input name="authorusername" value="${authorusername!}" type="text"/>
+<@s.m "content.buy.payType"/>:<@p.radio name="payMode" value="${payMode!}" list={"0":"global.all","1":"configContentCharge.model.1","2":"configContentCharge.model.2"} required="true"/>
+<input class="query" type="submit" value="<@s.m "global.query"/>"/>
+</div>
+</form>
+<form id="tableForm" method="post">
+<input type="hidden" name="pageNo" value="${pageNo!}"/>
+<input type="hidden" name="orderNum" value="${orderNum!}"/>
+<input type="hidden" name="buyusername" value="${buyusername!}"/>
+<input type="hidden" name="authorusername" value="${authorusername!}"/>
+<input type="hidden" name="payMode" value="${payMode!}"/>
+<@p.table value=pagination listAction="user_order_list.do";contentBuy,i,has_next><#rt/>
+	<@p.column title="<input type='checkbox' onclick='Pn.checkbox(\"ids\",this.checked)'/>" width="20">
+		<input type='checkbox' name='ids' value='${contentBuy.id}'/><#t/>
+	</@p.column><#t/>
+	<@p.column code="content.buy.content"><a href="${contentBuy.content.url!}" title="${contentBuy.content.title?html}" target="_blank"><@text_cut s=contentBuy.content.title?html len=15 append="..."/></a></@p.column><#t/>
+	<@p.column code="content.buy.buyUser"><#if contentBuy.buyUser??>${contentBuy.buyUser.realname!contentBuy.buyUser.username!}<#else><@s.m "cmsComment.anonymity"/></#if></@p.column><#t/>
+	<@p.column code="content.buy.authorUser">${contentBuy.authorUser.realname!contentBuy.buyUser.username!}</@p.column><#t/>
+	<@p.column code="content.buy.chargeAmount">${contentBuy.chargeAmount!}</@p.column><#t/>
+	<@p.column code="content.buy.authorAmount">${contentBuy.authorAmount!}</@p.column><#t/>
+	<@p.column code="content.buy.platAmount">${contentBuy.platAmount!}</@p.column><#t/>
+	<@p.column code="content.buy.buyTime">${contentBuy.buyTime?string("yyyy-MM-dd HH:mm:ss")}</@p.column><#t/>
+	<@p.column code="content.buy.payMode"><#if contentBuy.orderNumWeiXin??><@s.m "content.buy.payMode.weixin"/><#elseif contentBuy.orderNumAliPay??><@s.m "content.buy.payMode.alipay"/><#else><@s.m "content.buy.payMode.other"/></#if></@p.column><#t/>
+	<@p.column code="content.buy.payType"><#if contentBuy.chargeReward==1><@s.m "content.buy.payType.charge"/><#else><@s.m "content.buy.payType.reward"/></#if></@p.column><#t/>
+	<@p.column code="content.buy.orderNumInternet">
+		${contentBuy.orderNumber!}<br/>${contentBuy.orderNumWeiXin!contentBuy.orderNumAliPay!}
+	</@p.column><#t/>
+</@p.table>
+</form>
+</div>
+<#include "/common/alert_message.html"/>
+</body>
+</html>

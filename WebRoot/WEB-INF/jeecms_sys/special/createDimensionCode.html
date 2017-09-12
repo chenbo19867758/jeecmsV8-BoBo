@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+function createDimensionCode(){
+	$.post("o_create_dimensioncode.do", {
+		content:$("#content").val(),
+		logoPicPath:$("#uploadImgPath1").val(),
+		logoWord:$("#logoWord").val(),
+		fontSize:$("#fontSize").val(),
+		size:$("#size").val()
+	}, function(data) {
+		$("#dimensionCodeImg").prop("src",data.url+"?d="+new Date());
+		$("#dimensionCodeImg").show();
+	}, "json");
+}
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "dimensioncode.function"/></div>
+</div>
+<div class="body-box">
+<#include "/common/image_upload.html"/>
+<@p.form id="jvForm" action="o_create_dimensioncode.do" labelWidth="12" class="formDefStyle">
+<@p.textarea width="50" colspan="1" label="dimensioncode.content" name="content" id="content" required="true" maxlength="1000" cols="70" rows="3"/>
+<@p.td width="50" colspan="1">
+	<div><img id="dimensionCodeImg" style="display: none;"/></div>
+</@p.td>
+<@p.tr/>
+<@p.td width="100" colspan="2"  label="dimensioncode.logoPicPath">
+<div id="attr_image">
+	<p class="attr"><@s.m "dimensioncode.image.url"/>: <input type="text" id="uploadImgPath1" name="logoPicPath"  maxlength="255" style="width:300px;"/></p>
+	<p class="attr" style="display:inline-block; margin-top:4px;"><@s.m "dimensioncode.image.upload"/>:
+	<span id="ufc1" style="position:relative;">
+	<input type='text' id='uploadFileText1'/>
+	<input class="browse" type='button' value='<@s.m "global.browse"/>'/>
+	<input onchange="$('#uploadFileText1').val(this.value)" type="file" id="uploadFile1" class="file-button"/>
+	</span>
+	<input class="upload-button" type="button" value="<@s.m 'imageupload.upload'/>" onclick="upload(1);"/><input type="hidden" id="mark1" value="false"/>
+	</p>
+</div>
+</@p.td><@p.tr/>
+<@p.text width="100" colspan="2" label="dimensioncode.logoWord" name="logoWord" id="logoWord"/><@p.tr/>
+<@p.text width="50" colspan="1" label="dimensioncode.fontSize" name="fontSize" id="fontSize" value=10 required="true" class="required digits" maxlength="100"/>
+<@p.text width="50" colspan="1" label="dimensioncode.size" name="size" id="size" value=100 required="true" class="required digits" maxlength="100"/>
+<@p.tr/>
+<div style="clear:both"></div>
+<@p.td colspan="2"><@p.button code="global.submit" class="submit" onclick="createDimensionCode()"/><@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>

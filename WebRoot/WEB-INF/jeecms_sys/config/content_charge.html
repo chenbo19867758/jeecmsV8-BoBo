@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title></title>
+<#include "/jeecms_sys/head.html"/>
+<script type="text/javascript">
+$(function() {
+	$("#jvForm").validate();
+});
+</script>
+</head>
+<body>
+<div class="page-positon ove">
+  <div class="position-div"><@s.m "global.position"/>: <@s.m "cmsConfig.function"/> > <@s.m "cmsConfigContentCharge.function"/> > <@s.m "global.edit"/></div>
+</div>
+<div class="body-box">
+<@p.form id="jvForm" action="o_content_charge_update.do" labelWidth="15" class="formDefStyle">
+<@p.text  width="50" colspan="1"  label="configContentCharge.weixinAppId" name="weixinAppId" value=cmsConfigContentCharge.weixinAppId required="true" class="required" maxlength="100"/>
+<@p.password  width="50" colspan="1" label="configContentCharge.weixinSecret" name="weixinSecret" maxlength="100" help="configContentCharge.weixinPassword.help"/><@p.tr/>
+
+<@p.text  width="50" colspan="1" label="configContentCharge.weixinAccount" name="weixinAccount" value=cmsConfigContentCharge.weixinAccount required="true" class="required" maxlength="100"/>
+<@p.password  width="50" colspan="1" label="configContentCharge.weixinPassword" name="weixinPassword"   maxlength="100" help="configContentCharge.weixinPassword.help" /><@p.tr/>
+<@p.password  width="50" colspan="1" label="configContentCharge.transferApiPassword" name="transferApiPassword"   maxlength="100" help="configContentCharge.weixinPassword.help"/>
+<@p.password  width="50" colspan="1" label="configContentCharge.transferPassword" name="payTransferPassword"   maxlength="100" help="configContentCharge.weixinPassword.help"/><@p.tr/>
+<@p.text  width="50" colspan="1" label="configContentCharge.rewardMin" name="rewardMin" value=cmsConfigContentCharge.rewardMin required="true" class="required number" vld="{min:0.01}" maxlength="11"/>
+<@p.text  width="50" colspan="1" label="configContentCharge.rewardMax" name="rewardMax" value=cmsConfigContentCharge.rewardMax required="true" class="required number" vld="{min:0.01}" maxlength="11"/><@p.tr/>
+
+<@p.text  width="50" colspan="1" label="configContentCharge.alipayPartnerId" name="alipayPartnerId" value=cmsConfigContentCharge.alipayPartnerId maxlength="100"/>
+<@p.text  width="50" colspan="1" label="configContentCharge.alipayAccount" name="alipayAccount" value=cmsConfigContentCharge.alipayAccount required="true" class="required" maxlength="100"/><@p.tr/>
+<@p.password  width="50" colspan="1" label="configContentCharge.alipayKey" name="alipayKey"   maxlength="100" help="configContentCharge.weixinPassword.help"/>
+
+<@p.text  width="50" colspan="1" label="configContentCharge.alipayAppId" name="alipayAppId" value=cmsConfigContentCharge.alipayAppId   maxlength="100"/><@p.tr/>
+<@p.textarea  width="100" colspan="2" label="configContentCharge.alipayPublicKey"  name="alipayPublicKey"   maxlength="1000" cols="70" rows="5" help="configContentCharge.weixinPassword.help"/><@p.tr/>
+<@p.textarea  width="100" colspan="2" label="configContentCharge.alipayPrivateKey" name="alipayPrivateKey"   maxlength="1000" cols="70" rows="5" help="configContentCharge.alipayPrivateKey.help"/><@p.tr/>
+
+
+<@p.text  width="50" colspan="1" label="configContentCharge.chargeRatio" name="chargeRatio" value=cmsConfigContentCharge.chargeRatio required="true" class="required number" maxlength="5" help="configContentCharge.chargeRatio.help"/>
+<@p.text  width="50" colspan="1" label="configContentCharge.minDrawAmount" name="minDrawAmount" value=cmsConfigContentCharge.minDrawAmount required="true" class="required number" maxlength="11" /><@p.tr/>
+<@p.td><@p.hidden name="id" value=cmsConfigContentCharge.id/><@p.submit code="global.submit"  class="submit" /> &nbsp; <@p.reset code="global.reset" class="cancel"/></@p.td>
+</@p.form>
+</div>
+</body>
+</html>
