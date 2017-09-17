@@ -18,6 +18,12 @@ import com.jeecms.core.manager.UnifiedUserMng;
 
 @Controller
 public class CmsLoginAct {
+	
+	@Autowired
+	private UnifiedUserMng unifiedUserMng;
+	@Autowired
+	private ConfigMng configMng;
+	
 	/**
 	 * 站点id cookie
 	 */
@@ -34,6 +40,7 @@ public class CmsLoginAct {
 	}
 
 	// 登录失败转向这里
+	// submit 名称不是固定的随便取， 只需匹配 @RequestMapping
 	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
 	public String submit(String username, HttpServletRequest request,
 			HttpServletResponse response, ModelMap model) {
@@ -43,10 +50,9 @@ public class CmsLoginAct {
 			Integer errorRemaining= unifiedUserMng.errorRemaining(username);
 			model.addAttribute("errorRemaining", errorRemaining);
 		}
+		//此方法不处理登陆成功（认证成功），shiro认证成功会自动跳转到上一个请求路径
+		//登陆失败还到login页面
 		return "login";
 	}
-	@Autowired
-	private UnifiedUserMng unifiedUserMng;
-	@Autowired
-	private ConfigMng configMng;
+
 }

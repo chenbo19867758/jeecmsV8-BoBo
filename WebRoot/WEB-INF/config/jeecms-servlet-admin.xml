@@ -30,7 +30,10 @@
 		</property>
 	</bean>
 	
-	<!-- mvc自定义拦截器 -->
+	<!-- 
+		mvc自定义拦截器
+		 执行顺序listener >> filter >> servlet >> spring Interceptor
+	-->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="interceptors">
 			<list>
@@ -116,6 +119,7 @@
 	<!-- 
 		AOP式方法级权限检查，保证实现了Shiro内部lifecycle函数的bean执行
 		depends-on属性指定bean前置依赖的bean,前置依赖的bean会在本bean实例化之前创建好  
+		"lifecycleBeanPostProcessor" 在 shiro-context.xml中定义
 	-->
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
 	</bean>
@@ -124,6 +128,9 @@
 	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
     	<property name="securityManager" ref="securityManager"/>
 	</bean>
-	<!--包含action-->
+	<!--
+		包含action
+		sping3.0标签 ，import标签，简化spring的配置文件 ，便于模块化
+	-->
 	<import resource="jeecms/jeecms-servlet-admin-action.xml"/>
 </beans>

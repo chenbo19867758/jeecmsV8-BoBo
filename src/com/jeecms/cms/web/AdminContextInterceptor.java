@@ -43,6 +43,24 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 	 * 是否开启单点认证
 	 */
 	public static final String SSO_ENABLE = "ssoEnable";
+	
+	private CmsSiteMng cmsSiteMng;
+	private CmsUserMng cmsUserMng;
+	private boolean auth = true;
+	private String[] excludeUrls;
+	
+	@Autowired
+	private CmsAuthorizingRealm authorizingRealm;
+
+	@Autowired
+	public void setCmsSiteMng(CmsSiteMng cmsSiteMng) {
+		this.cmsSiteMng = cmsSiteMng;
+	}
+
+	@Autowired
+	public void setCmsUserMng(CmsUserMng cmsUserMng) {
+		this.cmsUserMng = cmsUserMng;
+	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request,
@@ -272,23 +290,7 @@ public class AdminContextInterceptor extends HandlerInterceptorAdapter {
 		}
 		return userPermission;
 	}
-	private CmsSiteMng cmsSiteMng;
-	private CmsUserMng cmsUserMng;
-	private boolean auth = true;
-	private String[] excludeUrls;
-	
-	@Autowired
-	private CmsAuthorizingRealm authorizingRealm;
 
-	@Autowired
-	public void setCmsSiteMng(CmsSiteMng cmsSiteMng) {
-		this.cmsSiteMng = cmsSiteMng;
-	}
-
-	@Autowired
-	public void setCmsUserMng(CmsUserMng cmsUserMng) {
-		this.cmsUserMng = cmsUserMng;
-	}
 
 	public void setAuth(boolean auth) {
 		this.auth = auth;

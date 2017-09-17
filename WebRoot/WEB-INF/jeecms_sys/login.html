@@ -27,6 +27,11 @@ body{background:url(${base}/res/jeecms/img/login/bg.jpg) left top repeat-x;}
       <div class="login-text">
         <div class="username-con"><i></i><input type="text" id="username" name="username" vld="{required:true}" maxlength="100" class="username" placeholder="<@s.m "login.username"/>" /></div>
         <div class="password-con"><i></i><input type="password" id="password" name="password" maxlength="32" vld="{required:true}" class="password" placeholder="<@s.m "login.password"/>" /></div>
+        
+        <!--  这里传递rememberMe也可以实现记住我的功能。
+        <div class="next-day"><input type="checkbox" class="login-checkbox"  value="true" name="rememberMe">下次自动登录</div>
+         -->
+         
         <#if (errorTimes??&&errorTimes<=0)||(errorRemaining?? && errorRemaining<=0)>
         <div class="login-captcha"><i></i>
           <input name="captcha" type="text" id="captcha" vld="{required:true}" class="captcha" placeholder="<@s.m "login.captcha"/>" />
@@ -40,13 +45,13 @@ body{background:url(${base}/res/jeecms/img/login/bg.jpg) left top repeat-x;}
       <div class="login-error">
 		<ul>
 		  <#if error=="org.apache.shiro.authc.IncorrectCredentialsException">
-		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidPassword"/></li>
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidPassword"/>111</li>
 		  <#elseif error=="org.apache.shiro.authc.UnknownAccountException">
-		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.usernameNotExist"/></li>
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.usernameNotExist"/>222</li>
 		  <#elseif error=="com.jeecms.common.security.CaptchaErrorException">
-		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidCaptcha"/></li>
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.invalidCaptcha"/>333</li>
 		  <#elseif error=="com.jeecms.common.security.DisabledException">
-		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.userDisabled"/></li>
+		  <li><img src="${base}/res/jeecms/images/error-icon.png"><@s.m "error.userDisabled"/>444</li>
  		  </#if>
 	    </ul>				
       </div>

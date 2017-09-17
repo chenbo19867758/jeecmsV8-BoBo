@@ -13,7 +13,19 @@
 		<property name="loginUrl" value="/login.jspx" />
 		<!-- successUrl认证成功统一跳转地址，不配置，shiro认证成功自动到上一个请求路径 -->
 		<property name="successUrl" value="/" />
-		<!-- 自定义filter配置 -->
+		
+		<!-- 
+			这是因为shiro源代码中判断了filter是否为AuthorizationFilter，
+			只有perms，roles，ssl，rest，port才是属于AuthorizationFilter(授权)，
+			而anon，authcBasic，auchc，user是AuthenticationFilter(验证)，所以unauthorizedUrl(未被授权的url)设置后不起作用。
+			这里不需要配置 unauthorizedUrl
+		 -->
+		 
+		<!-- 
+			自定义filter配置
+			这里配置filter的目的是区分前端，后端登录失败跳转的地址。
+			一般系统使用时如果只管理后台，可以不使用下面的过滤器 
+		-->
 		<property name="filters">
 			<util:map>
 				<!-- 下面配置 authcFilter bean -->
@@ -45,7 +57,10 @@
 			/jeeadmin/jeecms/login.do = authc 配置为需要验证权限登录 需要过来器<entry key="authc"
 			value-ref="authcFilter" /> 过滤
 		-->
-		<!-- filterChainDefinitions Shiro连接约束配置,即过滤链的定义 -->  
+		<!-- 
+			filterChainDefinitions Shiro连接约束配置,即过滤链的定义
+			Shiro Filter的执行顺序 “ 自上而下，从左到右”
+		-->  
 		<property name="filterChainDefinitions">
 			<value>
 				*.jspx = anon
@@ -68,7 +83,10 @@
 		<property name="adminLogin" value="/jeeadmin/jeecms/login.do" />
 		<property name="adminPrefix" value="/jeeadmin/jeecms/" />
 	</bean>
-	<!-- parent="adminUrlBean" 继承adminUrlBean 注入的属性  -->
+	<!-- 
+		自定义过滤
+		parent="adminUrlBean" 继承adminUrlBean 注入的属性 
+	 -->
 	<bean id="authcFilter" class="com.jeecms.core.security.CmsAuthenticationFilter"
 		parent="adminUrlBean">
 		<!-- 登录成功后进入的页面 -->
@@ -92,14 +110,15 @@
 		<property name="rememberMeManager" ref="rememberMeManager" />
 		<property name="realm" ref="authorizingRealm" /> <!-- 凭证匹配器 -->
 	</bean>
-	<!-- 凭证匹配器 -->
+	<!-- 凭证匹配器，核心验证登录与权限授权 -->
 	<bean id="authorizingRealm" class="com.jeecms.core.security.CmsAuthorizingRealm">
 		<property name="credentialsMatcher">
 			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<!-- 加密的方式，MD5 -->
 				<property name="hashAlgorithmName" value="MD5" />
 				<!--   true means hex encoded, false means base64 encoded -->
 				<property name="storedCredentialsHexEncoded" value="true" />
-				<!-- 迭代次数 -->
+				<!-- 迭代次数，散列的次数 ，加密的次数，2的话就是加密后把加密的值再加密一次 -->
 				<property name="hashIterations" value="1" />
 			</bean>
 		</property>
@@ -114,12 +133,21 @@
 			<ref local="cacheManager" />
 		</property>
 	</bean>
+	<!-- 会话Cookie模板 -->  
 	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
-		<constructor-arg value="rememberMe" />
+		<!-- 
+			constructor-arg 构造器注入
+			前端登录或后端登录，可以传入rememberMe 参数实现记住我功能
+			rememberMe是cookie的名字  
+		-->	
+		<constructor-arg value="rememberMe" /> 
 		<property name="httpOnly" value="true" />
 		<property name="maxAge" value="31536000" /><!-- 365天 -->
 	</bean>
-	<!-- rememberMe管理器 -->
+	<!-- 
+		rememberMe管理器
+		cipherKey是加密rememberMe Cookie的密钥；默认AES算法；
+	 -->
 	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
 		<property name="cipherKey"
 			value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}" />
@@ -128,6 +156,15 @@
 	<!--
 		Enable Shiro Annotations for Spring-configured beans. Only run after
 	-->
-	<!-- the lifecycleBeanProcessor has run: -->
+	<!-- 
+		the lifecycleBeanProcessor has run: 
+		jeecms-servlet-admin.xml中配置使用
+		
+		lifecycleBeanPostProcessor Shiro生命周期处理器
+		LifecycleBeanPostProcessor用于在实现了Initializable接口的Shiro bean初始化时调用Initializable接口回调，
+		在实现了Destroyable接口的Shiro bean销毁时调用 Destroyable接口回调。
+		如UserRealm就实现了Initializable，
+		而DefaultSecurityManager实现了Destroyable。
+	-->
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
 </beans>

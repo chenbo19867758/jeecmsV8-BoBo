@@ -36,6 +36,21 @@ import com.octo.captcha.service.image.ImageCaptchaService;
 
 /**
  * CmsAuthenticationFilter自定义登录认证filter
+ * 
+ * 根据FormAuthenticationFilter的继承体系，
+ * 1.先执行AdviceFilter.doFilterInternal方法：
+ * 2.接下来执行：PathMatchingFilter.preHandle方法：
+ * 3.接着执行AccessControlFilter.onPreHandle方法：
+ * 4.接着执行AuthenticatingFilter.isAccessAllowed方法：
+ * 
+ * 5.由以上代码可知，由于是第一次访问URL:"/authenticated.jsp"，所以isAccessAllowed方法返回false，
+ * 所以接着执行FormAuthenticationFilter.onAccessDenied方法：
+ * 
+ * 6.根据配置，访问URL:"/login.jsp"时也会应用上FormAuthenticationFilter，
+ * 由于是重定向所以发起的是GET请求，所以isLoginSubmission()返回false，
+ * 所以没有执行executeLogin方法，所以能够访问/login.jsp页面。
+ * 在登录表单中应该设置action=""，这样登录请求会提交至/login.jsp，
+ * 这时为POST请求，所以会执行executeLogin方法：
  */
 public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 	
@@ -91,6 +106,7 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 		String failureUrl = req.getParameter(FAILURE_URL);
 		//验证码校验
 		if (isCaptchaRequired(username,req, res)) {
+			// 传入页面中填写的验证码
 			String captcha = request.getParameter(CAPTCHA_PARAM);
 			if (captcha != null) {
 				if (!imageCaptchaService.validateResponseForID(session.getSessionId(req, res), captcha)) {
@@ -113,6 +129,7 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 			Subject subject = getSubject(request, response);
 			// 判断登录是否成功
 			subject.login(token);;
+			// 登录成功转向登录成功页面
 			return onLoginSuccess(token,adminLogin,subject, request, response);
 		} catch (AuthenticationException e) {
 			//e.printStackTrace();
@@ -123,7 +140,7 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 	public boolean onPreHandle(ServletRequest request,
 			ServletResponse response, Object mappedValue) throws Exception {
 		boolean isAllowed = isAccessAllowed(request, response, mappedValue);
-		//登录跳转
+		// 判断是否登录页面的请求，转向登录页面
 		if (isAllowed && isLoginRequest(request, response)) {
 			try {
 				issueSuccessRedirect(request, response);
@@ -136,6 +153,9 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 	}
 	
 
+	/**
+	 * 在这返回成功页面successUrl
+	 */
 	protected void issueSuccessRedirect(ServletRequest request, ServletResponse response)
 			throws Exception {
 		HttpServletRequest req = (HttpServletRequest) request;
@@ -144,13 +164,14 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 		if (StringUtils.isBlank(successUrl)) {
 			if (req.getRequestURI().startsWith(
 					req.getContextPath() + getAdminPrefix())) {
-				// 后台直接返回首页
+				// 后台直接返回首页，这里为 /jeeadmin/jeecms/index.do
 				successUrl = getAdminIndex();
 				// 清除SavedRequest
 				WebUtils.getAndClearSavedRequest(request);
 				WebUtils.issueRedirect(request, response, successUrl, null,true);
 				return;
 			} else {
+				// 返回默认的成功页，AuthenticationFilter 中 DEFAULT_SUCCESS_URL = "/";
 				successUrl = getSuccessUrl();
 			}
 		}
