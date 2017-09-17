@@ -30,10 +30,11 @@
 		</property>
 	</bean>
 	
+	<!-- mvc自定义拦截器 -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="interceptors">
 			<list>
-				<ref bean="adminContextInterceptor"/>
+				<ref bean="adminContextInterceptor"/> <!-- 拦截器 -->
 				<ref bean="adminLocaleIntercept"/>
 				<ref bean="fireWallInterceptor"/>
 			</list>
@@ -42,7 +43,8 @@
 	<bean id="adminContextInterceptor" class="com.jeecms.cms.web.AdminContextInterceptor">
 		<!--<property name="adminId" value="1"/>-->
 		<property name="auth" value="true"/>
-		<property name="excludeUrls">
+		<!-- 自定义排除过滤的url -->
+		<property name="excludeUrls"> 
 			<list>
 				<value>/login.do</value>
 				<value>/logout.do</value>
@@ -110,9 +112,15 @@
 	<bean class="com.jeecms.common.web.springmvc.HandlerExceptionResolver"/>
 	 -->
 	<context:annotation-config/>
-	<!-- AOP式方法级权限检查  -->
+	
+	<!-- 
+		AOP式方法级权限检查，保证实现了Shiro内部lifecycle函数的bean执行
+		depends-on属性指定bean前置依赖的bean,前置依赖的bean会在本bean实例化之前创建好  
+	-->
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
 	</bean>
+	
+	<!-- 开启shiro注解支持，可在controller方法中使用shiro注解配置权限 -->
 	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
     	<property name="securityManager" ref="securityManager"/>
 	</bean>

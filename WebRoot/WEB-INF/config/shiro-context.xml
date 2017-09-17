@@ -1,22 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
 	   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd"
 	default-lazy-init="true">
-	
+
+	<!-- web.xml中 对应名称 <filter-name>shiroFilter</filter-name> -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- Shiro的核心安全接口,这个属性是必须的 -->
 		<property name="securityManager" ref="securityManager" />
+		<!-- /login.jspx 前端用户登录地址 -->
 		<property name="loginUrl" value="/login.jspx" />
+		<!-- successUrl认证成功统一跳转地址，不配置，shiro认证成功自动到上一个请求路径 -->
 		<property name="successUrl" value="/" />
+		<!-- 自定义filter配置 -->
 		<property name="filters">
 			<util:map>
+				<!-- 下面配置 authcFilter bean -->
 				<entry key="authc" value-ref="authcFilter" />
+				<!-- 下面配置 userFilter bean -->
 				<entry key="user" value-ref="userFilter" />
+				<!--  退出过滤器， 下面配置 logoutFilter bean -->
 				<entry key="logout" value-ref="logoutFilter" />
 			</util:map>
 		</property>
-		<!--anon匿名 authc登录认证  user用户已登录 logout退出filter-->
+		<!--
+			anon匿名 authc登录认证 user用户已登录 logout退出filter anon:例子/admins/**=anon
+			没有参数，表示可以匿名使用。 authc:例如/admins/user/**=authc表示需要认证(登录)才能使用，没有参数
+			roles(角色)：例子/admins/user/**=roles[admin],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，当有多个参数时，例如admins/user/**=roles["admin,guest"],每个参数通过才算通过，相当于hasAllRoles()方法。
+			perms（权限）：例子/admins/user/**=perms[user:add:*],参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，例如/admins/user/**=perms["user:add:*,user:modify:*"]，当有多个参数时必须每个参数都通过才通过，想当于isPermitedAll()方法。
+			rest：例子/admins/user/**=rest[user],根据请求的方法，相当于/admins/user/**=perms[user:method]
+			,其中method为post，get，delete等。
+			port：例子/admins/user/**=port[8081],当请求的url的端口不是8081是跳转到schemal://serverName:8081?queryString,其中schmal是协议http或https等，serverName是你访问的host,8081是url配置里port的端口，queryString是你访问的url里的？后面的参数。
+			authcBasic：例如/admins/user/**=authcBasic没有参数表示httpBasic认证
+			ssl:例子/admins/user/**=ssl没有参数，表示安全的url请求，协议为https
+
+			user:例如/admins/user/**=user没有参数表示必须存在用户，当登入操作时不做检查
+			user是介于，anon和authc直之间的。换句话来说：而“/authenticated=
+			user”表示访问该地址的用户是身份验证通过或RememberMe
+			登录的都可以。或者说，某个页面需要登录才能看，但这个页面信息又不太重要，就可已使用这个
+		-->
+		<!--
+			后台首页登录 /jeeadmin/jeecms/login.do 后台登录页面访问的接口
+			/jeeadmin/jeecms/login.do = authc 配置为需要验证权限登录 需要过来器<entry key="authc"
+			value-ref="authcFilter" /> 过滤
+		-->
+		<!-- filterChainDefinitions Shiro连接约束配置,即过滤链的定义 -->  
 		<property name="filterChainDefinitions">
 			<value>
 				*.jspx = anon
@@ -33,54 +62,72 @@
 			</value>
 		</property>
 	</bean>
-	<!-- Shiro Filter -->	
+	<!-- Shiro Filter -->
+	<!-- 全局定义adminLogin，adminPrefix 供下面的bean使用 -->
 	<bean id="adminUrlBean" class="com.jeecms.core.security.CmsAdminUrl">
-		<property name="adminLogin" value="/jeeadmin/jeecms/login.do"/>
-		<property name="adminPrefix" value="/jeeadmin/jeecms/"/>
+		<property name="adminLogin" value="/jeeadmin/jeecms/login.do" />
+		<property name="adminPrefix" value="/jeeadmin/jeecms/" />
 	</bean>
-	<bean id="authcFilter" class="com.jeecms.core.security.CmsAuthenticationFilter" parent="adminUrlBean">
-		<property name="adminIndex" value="/jeeadmin/jeecms/index.do"/>
+	<!-- parent="adminUrlBean" 继承adminUrlBean 注入的属性  -->
+	<bean id="authcFilter" class="com.jeecms.core.security.CmsAuthenticationFilter"
+		parent="adminUrlBean">
+		<!-- 登录成功后进入的页面 -->
+		<property name="adminIndex" value="/jeeadmin/jeecms/index.do" />
 	</bean>
-	<bean id="userFilter" class="com.jeecms.core.security.CmsUserFilter" parent="adminUrlBean"/>
-	<bean id="logoutFilter" class="com.jeecms.core.security.CmsLogoutFilter" parent="adminUrlBean"/>
+
+	<!--
+		<entry key="user" value-ref="userFilter" /> 配置过滤 user 权限的访问地址
+		/member/** = user /jeeadmin/jeecms/** =user
+	-->
+	<bean id="userFilter" class="com.jeecms.core.security.CmsUserFilter"
+		parent="adminUrlBean" />
+
+	<!-- 退出过滤器 -->
+	<bean id="logoutFilter" class="com.jeecms.core.security.CmsLogoutFilter"
+		parent="adminUrlBean" />
+
+	<!-- 核心管理类 入口， security 安全，-->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-		<property name="cacheManager" ref="shiroEhcacheManager"/> 
-		<property name="rememberMeManager" ref="rememberMeManager"/> 
-		<property name="realm" ref="authorizingRealm" />
+		<property name="cacheManager" ref="shiroEhcacheManager" />
+		<property name="rememberMeManager" ref="rememberMeManager" />
+		<property name="realm" ref="authorizingRealm" /> <!-- 凭证匹配器 -->
 	</bean>
+	<!-- 凭证匹配器 -->
 	<bean id="authorizingRealm" class="com.jeecms.core.security.CmsAuthorizingRealm">
 		<property name="credentialsMatcher">
-           <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
-               <property name="hashAlgorithmName" value="MD5"/>
-             <!--   true means hex encoded, false means base64 encoded -->
-               <property name="storedCredentialsHexEncoded" value="true"/>
-               <!-- 迭代次数 -->
-               <property name="hashIterations" value="1" />
-           </bean>
-        </property> 
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5" />
+				<!--   true means hex encoded, false means base64 encoded -->
+				<property name="storedCredentialsHexEncoded" value="true" />
+				<!-- 迭代次数 -->
+				<property name="hashIterations" value="1" />
+			</bean>
+		</property>
 		<property name="cmsUserMng" ref="cmsUserMng" />
 	</bean>
 	<bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
-		<!-- 
-		<property name="cacheManagerConfigFile">
-				<value>classpath:ehcache-shiro.xml</value>
-		</property>
-		 -->
+		<!--
+			<property name="cacheManagerConfigFile">
+			<value>classpath:ehcache-shiro.xml</value> </property>
+		-->
 		<property name="cacheManager">
-			<ref local="cacheManager"/>
+			<ref local="cacheManager" />
 		</property>
 	</bean>
-	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">  
-	    <constructor-arg value="rememberMe"/>  
-	    <property name="httpOnly" value="true"/>  
-	    <property name="maxAge" value="31536000"/><!-- 365天 -->  
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<constructor-arg value="rememberMe" />
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="31536000" /><!-- 365天 -->
 	</bean>
 	<!-- rememberMe管理器 -->
 	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
-	    <property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}"/>
-	    <property name="cookie" ref="rememberMeCookie"/>
+		<property name="cipherKey"
+			value="#{T(org.apache.shiro.codec.Base64).decode('4AvVhmFLUs0KTA3Kprsdag==')}" />
+		<property name="cookie" ref="rememberMeCookie" />
 	</bean>
-	<!-- Enable Shiro Annotations for Spring-configured beans.  Only run after -->
+	<!--
+		Enable Shiro Annotations for Spring-configured beans. Only run after
+	-->
 	<!-- the lifecycleBeanProcessor has run: -->
 	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
 </beans>

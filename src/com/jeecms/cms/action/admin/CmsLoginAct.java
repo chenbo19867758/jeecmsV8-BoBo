@@ -33,6 +33,7 @@ public class CmsLoginAct {
 		return "login";
 	}
 
+	// 登录失败转向这里
 	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
 	public String submit(String username, HttpServletRequest request,
 			HttpServletResponse response, ModelMap model) {

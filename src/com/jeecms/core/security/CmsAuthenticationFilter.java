@@ -54,6 +54,25 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 	 * 登录错误地址
 	 */
 	public static final String FAILURE_URL = "failureUrl";
+	
+	@Autowired
+	private CmsUserMng userMng;
+	@Autowired
+	private UnifiedUserMng unifiedUserMng;
+	@Autowired
+	private SessionProvider session;
+	@Autowired
+	private ImageCaptchaService imageCaptchaService;
+	@Autowired
+	private CmsLogMng cmsLogMng;
+	@Autowired
+	private CmsUserMng cmsUserMng;
+	
+	
+	private String adminIndex;
+	
+	private String adminLogin;  // shiro-context.xml中 authcFilter parent="adminUrlBean" adminUrlBean 注入
+	private String adminPrefix; // shiro-context.xml中 authcFilter parent="adminUrlBean" adminUrlBean 注入
 
 	protected boolean executeLogin(ServletRequest request,ServletResponse response) throws Exception {
 		AuthenticationToken token = createToken(request, response);
@@ -63,6 +82,7 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 		}
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		// 获取登录名
 		String username = (String) token.getPrincipal();
 		boolean adminLogin=false;
 		if (req.getRequestURI().startsWith(req.getContextPath() + getAdminPrefix())){
@@ -248,24 +268,6 @@ public class CmsAuthenticationFilter extends FormAuthenticationFilter {
 			return false;
 		}
 	}
-	
-
-	@Autowired
-	private CmsUserMng userMng;
-	@Autowired
-	private UnifiedUserMng unifiedUserMng;
-	@Autowired
-	private SessionProvider session;
-	@Autowired
-	private ImageCaptchaService imageCaptchaService;
-	@Autowired
-	private CmsLogMng cmsLogMng;
-	@Autowired
-	private CmsUserMng cmsUserMng;
-	
-	private String adminPrefix;
-	private String adminIndex;
-	private String adminLogin;
 
 	public String getAdminPrefix() {
 		return adminPrefix;
